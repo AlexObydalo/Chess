@@ -16,7 +16,7 @@ namespace Chess
 
         public int PositionNum = 0;
         
-        public int[,] map = new int[8, 8] //Изначальная расстановка фигур
+        public int[,] StartMap = new int[8, 8] //Изначальная расстановка фигур
         {
             {15, 14, 13, 12, 11, 13, 14, 15}, //Десятки овечают за цвет (1 - белый, 2 - черный)
             {16, 16, 16, 16, 16, 16, 16, 16}, //Еденицы отвечают за тип фигуры 
@@ -27,6 +27,8 @@ namespace Chess
             {26, 26, 26, 26, 26, 26, 26, 26},
             {25, 24, 23, 22, 21, 23, 24, 25},
         };
+
+        public int[,] map;
 
         public Button[,] butts = new Button[8, 8]; // Массив кнопок - клеток поля
         
@@ -54,18 +56,24 @@ namespace Chess
         public void Init()
         {
             currPlayer = 1;
-            map = new int[8, 8] // Расстановка фигур на карте
-            {
-               {15, 14, 13, 12, 11, 13, 14, 15},
-               {16, 16, 16, 16, 16, 16, 16, 16},
-               {0, 0, 0, 0, 0, 0, 0, 0},
-               {0, 0, 0, 0, 0, 0, 0, 0},
-               {0, 0, 0, 0, 0, 0, 0, 0},
-               {0, 0, 0, 0, 0, 0, 0, 0},
-               {26, 26, 26, 26, 26, 26, 26, 26},
-               {25, 24, 23, 22, 21, 23, 24, 25},
-            };
-        CreateMap(); // Метод прорисовки игового поля
+            
+            // Расстановка фигур на карте
+            map = new int[8, 8] 
+        {
+            {15, 14, 13, 12, 11, 13, 14, 15}, 
+            {16, 16, 16, 16, 16, 16, 16, 16}, 
+            {0, 0, 0, 0, 0, 0, 0, 0}, 
+            {0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0},
+            {26, 26, 26, 26, 26, 26, 26, 26},
+            {25, 24, 23, 22, 21, 23, 24, 25},
+        };
+
+
+
+
+            CreateMap(); // Метод прорисовки игового поля
 
             // Ход входит в историю
             gamehistory.Add(new int[8, 8]);
@@ -83,7 +91,9 @@ namespace Chess
         {
             currPlayer = 1;
             PositionNum = 0;
-            map = new int[8, 8] // Расстановка фигур на карте
+
+            // Расстановка фигур на карте
+            map = new int[8, 8]
             {
                {15, 14, 13, 12, 11, 13, 14, 15},
                {16, 16, 16, 16, 16, 16, 16, 16},
@@ -92,8 +102,9 @@ namespace Chess
                {0, 0, 0, 0, 0, 0, 0, 0},
                {0, 0, 0, 0, 0, 0, 0, 0},
                {26, 26, 26, 26, 26, 26, 26, 26},
-               {25, 24, 23, 22, 21, 23, 24, 25},
-            };
+               {25, 24, 23, 22, 21, 23, 24, 25}, 
+             };
+
             ReDrawMap(); // Метод прорисовки игового поля
             gamehistory.Clear(); //Удаление истории игры
 
@@ -256,6 +267,13 @@ namespace Chess
 
                     PositionNum++; //Увеличить номер позиции
 
+                    
+                    if(map[pressedButton.Location.Y / 50, pressedButton.Location.X / 50]%10 == 6 && (pressedButton.Location.Y / 50 == 7 || pressedButton.Location.Y / 50 == 0)) //Если пешка на краю поля
+                    {
+                        map[pressedButton.Location.Y / 50, pressedButton.Location.X / 50] -= 4; //Запись пешки как королевы
+                        ReDrawMap(); //Перерисовка карты 
+                    }
+                    
                     // Ход входит в историю
                     gamehistory.Add(new int[8,8]);
                     for (int i = 0; i < 8; i++)
@@ -369,7 +387,7 @@ namespace Chess
                             butts[IcurrFigure + 1 * dir, JcurrFigure].Enabled = true; //Сделать клетку доступной к нажатию
                         }
 
-                        if ((IcurrFigure == 1 && currPlayer == 1 || IcurrFigure == 6 && currPlayer == 2) & map[IcurrFigure + 1 * dir, JcurrFigure] == 0) // Если есть возможность сделать два хода вперед
+                        if ((IcurrFigure == 1 && currPlayer == 1 || IcurrFigure == 6 && currPlayer == 2) & map[IcurrFigure + 2 * dir, JcurrFigure] == 0) // Если есть возможность сделать два хода вперед
                         {
                             butts[IcurrFigure + 2 * dir, JcurrFigure].BackColor = Color.Yellow; //Окрасить клетку
                             butts[IcurrFigure + 2 * dir, JcurrFigure].Enabled = true; //Сделать клетку доступной к нажатию
