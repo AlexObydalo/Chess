@@ -38,6 +38,10 @@ namespace Chess
 
         public Button prevButton; // Кнопка которая была нажата предпоследней
 
+        public Point prevCastlePlaceForCastling = new Point(); //Предыдущее место ладьи для рокировки
+        public Point CastlePlaceForCastling = new Point(); //Место ладьи для рокировки
+
+
         public bool isMoving = false; // Буллеровкая переменная - происходит ли ход?
         public Form1()
         {
@@ -151,7 +155,7 @@ namespace Chess
                             butt.BackgroundImage = part2;
                             break;
                     }
-                    butt.Click += new EventHandler(OnFigurePress); // Добавление кноки к общей функции обработки кликов
+                    butt.Click += new EventHandler(OnFigurePress); // Добавление кнопки к общей функции обработки кликов
 
                     //butt.BackColor = Color.White;
 
@@ -217,6 +221,7 @@ namespace Chess
 
         public void OnFigurePress(object sender, EventArgs e) //Общая фунция кликов по кнопкам
         {
+            //?? если это не рокировочная кнопка, то сбросить рокировоччную
             //if (prevButton != null)
             //    prevButton.BackColor = Color.White;
 
@@ -256,6 +261,46 @@ namespace Chess
                     //Поменять  изображения кнопок местами
                     pressedButton.BackgroundImage = prevButton.BackgroundImage;
                     prevButton.BackgroundImage = null;
+
+                    //если кнопка рокировочная, 
+                    
+                    
+                    
+                    if(map[pressedButton.Location.Y / 50, pressedButton.Location.X / 50] % 10 == 1 && Math.Abs(pressedButton.Location.X / 50 - prevButton.Location.X / 50)==2) //Если король сделал рокировку. Условия: на нажатой клетке король, король сдвинулся на две клетки.
+                    {
+                        int dir = (pressedButton.Location.X / 50 - prevButton.Location.X / 50) / 2; //Направление короля: вправо = 1, влево = -1.
+                        if(currPlayer==1)//Рокируються белые
+                        {
+                            if(dir==1)//Направление короля вправо
+                            {
+                                //перемещение ладьи в короткой рокировке
+                                map[0, 5] = map[0, 7]; //Клетка 0.5 приравниваеться клетке 0.7 
+                                map[0, 7] = 0; //Клетка 0.7 обнуляеться
+                            }
+                            else //Направление короля влево
+                            {
+                                //перемещение ладьи в длинной рокировке
+                                map[0, 3] = map[0, 0]; //Клетка 0.3 приравниваеться клетке 0.0
+                                map[0, 0] = 0; //Клетка 0.0 обнуляеться
+                            }
+                        }
+                        else//Рокируються черные
+                        {
+                            if (dir == 1)//Направление короля вправо
+                            {
+                                //перемещение ладьи в короткой рокировке
+                                map[7, 5] = map[7, 7]; //Клетка 7.5 приравниваеться клетке 7.7 
+                                map[7, 7] = 0; //Клетка 7.7 обнуляеться
+                            }
+                            else //Направление короля влево
+                            {
+                                //перемещение ладьи в длинной рокировке
+                                map[7, 3] = map[7, 0]; //Клетка 7.3 приравниваеться клетке 7.0
+                                map[7, 0] = 0; //Клетка 7.0 обнуляеться
+                            }
+                        }
+                        ReDrawMap(); //Перерисовать
+                    }
                     
                     isMoving = false; //Завершить ход
 
@@ -273,6 +318,8 @@ namespace Chess
                         map[pressedButton.Location.Y / 50, pressedButton.Location.X / 50] -= 4; //Запись пешки как королевы
                         ReDrawMap(); //Перерисовка карты 
                     }
+
+                    
                     
                     // Ход входит в историю
                     gamehistory.Add(new int[8,8]);
@@ -412,21 +459,23 @@ namespace Chess
                     }
                     break;
 
-                case 5:
+                case 5: //Для Ладьи
                     ShowVerticalHorizontal(IcurrFigure, JcurrFigure);
                     break;
-                case 3:
+                case 3: //Для офицера
                     ShowDiagonal(IcurrFigure, JcurrFigure);
                     break;
-                case 2:
+                case 2: //Для ферзя 
                     ShowVerticalHorizontal(IcurrFigure, JcurrFigure);
                     ShowDiagonal(IcurrFigure, JcurrFigure);
                     break;
-                case 1:
+                case 1: //Для короля
                     ShowVerticalHorizontal(IcurrFigure, JcurrFigure, true);
                     ShowDiagonal(IcurrFigure, JcurrFigure, true);
+                    ShowShortCastlingForKing(IcurrFigure, JcurrFigure); //Показать короткую рокировку
+                    ShowLongCastlingForKing(IcurrFigure, JcurrFigure); //Показать длинную рокировку
                     break;
-                case 4:
+                case 4: //Для коня
                     ShowHorseSteps(IcurrFigure, JcurrFigure);
                     break;
             }
@@ -583,6 +632,85 @@ namespace Chess
         }
 
 
+        public void ShowShortCastlingForKing(int IcurrFigure, int JcurrFigure)
+        {
+            if (IsKingReadyForCastling(IcurrFigure, JcurrFigure) && IsCastleReadyForShortCastling(IcurrFigure, JcurrFigure)) //Если король и ладья на правильном месте для короткой рокировки
+            {
+                if(IsTrerePlaceForShortCastling()) //Если место между королем и правой ладьей свободно
+                {
+                    butts[IcurrFigure, JcurrFigure + 2].Enabled = true; //Сделать клетку на два хода вправо от короля доступной к нажатию
+                    butts[IcurrFigure, JcurrFigure + 2].BackColor = Color.Red; //Сделать клетку на два хода вправо от короля красной
+                    //запомнить эту клетку и клетку, куда ставить ладью
+                    prevCastlePlaceForCastling = new Point(IcurrFigure, JcurrFigure + 3);
+                    prevCastlePlaceForCastling = new Point(IcurrFigure, JcurrFigure + 1);
+                }
+            }
+        }
+
+        public void ShowLongCastlingForKing(int IcurrFigure, int JcurrFigure)
+        {
+            if (IsKingReadyForCastling(IcurrFigure, JcurrFigure) && IsCastleReadyForLongCastling(IcurrFigure, JcurrFigure)) //Если король и ладья на правильном месте для длинной рокировки
+            {
+                if (IsTrerePlaceForLongCastling()) //Если место между королем и левой ладьей свободно
+                {
+                    butts[IcurrFigure, JcurrFigure - 2].Enabled = true; //Сделать клетку на два хода влево от короля доступной к нажатию
+                    butts[IcurrFigure, JcurrFigure - 2].BackColor = Color.Red; //Сделать клетку на два хода влево от короля красной
+                    
+                    //запомнить эту клетку и клетку, куда ставить ладью
+                    prevCastlePlaceForCastling = new Point(IcurrFigure, JcurrFigure - 4);
+                    prevCastlePlaceForCastling = new Point(IcurrFigure, JcurrFigure - 1);
+                }
+            }
+        }
+
+        public bool IsKingReadyForCastling(int IcurrFigure, int JcurrFigure)
+        {
+            if (JcurrFigure == 4 && (IcurrFigure == 0 && currPlayer == 1 || IcurrFigure == 7 && currPlayer == 2)) //Если король на правильном месте для рокировки
+            {
+                return true;
+            }
+            return false;
+        }
+
+        public bool IsCastleReadyForShortCastling(int IcurrFigure, int JcurrFigure)
+        {
+            if ((map[0,7] == 15 && currPlayer == 1) || (map[7, 7] == 25 && currPlayer == 2))//Если ладья на правильном месте для короткой рокировки
+            {
+                return true;
+            }
+            return false;
+        }
+
+        public bool IsCastleReadyForLongCastling(int IcurrFigure, int JcurrFigure)
+        {
+            if ((map[0, 0] == 15 && currPlayer == 1) || (map[7, 0] == 25 && currPlayer == 2)) //Если ладья на правильном месте для длинной рокировки
+            {
+                return true;
+            }
+            return false;
+        }
+
+        public bool IsTrerePlaceForShortCastling() 
+        {
+            if ((currPlayer == 1 && map[0,5]==0 && map[0, 6] == 0) || (currPlayer == 2 && map[7, 5] == 0 && map[7, 6] == 0))//Есть ли место для короткой рокировки у игрока, который ходит
+            {
+                return true;
+            }
+            return false;
+        }
+
+        public bool IsTrerePlaceForLongCastling()
+        {
+            if ((currPlayer == 1 && map[0, 3] == 0 && map[0, 2] == 0 && map[0, 1] == 0) || (currPlayer == 2 && map[7, 3] == 0 && map[7, 2] == 0 && map[7, 1] == 0))//Есть ли место для длинной рокировки у игрока, который ходит
+            {
+                return true;
+            }
+            return false;
+        }
+
+
+
+
 
         public bool DeterminePath(int IcurrFigure, int j) //Обозначить доступную клетку, и узнать есть ли на ней фигура
         {
@@ -603,7 +731,7 @@ namespace Chess
             return true;
         }
 
-        private void button3_Click(object sender, EventArgs e) //Осторожно! Есть неведомые ошибки
+        private void button3_Click(object sender, EventArgs e) //Кнопка по возрату предыдущего хода
         {
             PositionNum--; //Уменьшение номера позиции
 
@@ -660,6 +788,8 @@ namespace Chess
 
             
         }
+
+
 
         private void label1_Click(object sender, EventArgs e)
         {
