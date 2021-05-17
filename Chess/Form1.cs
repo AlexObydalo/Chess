@@ -253,6 +253,7 @@ namespace Chess
             {
                 if (isMoving) //Если идет ход
                 {
+                    
                     //Поменять значения клеток местами
                     int temp = map[pressedButton.Location.Y / 50, pressedButton.Location.X / 50];
                     map[pressedButton.Location.Y / 50, pressedButton.Location.X / 50] = map[prevButton.Location.Y / 50, prevButton.Location.X / 50];
@@ -334,6 +335,24 @@ namespace Chess
 
                     label2.Text = Convert.ToString(PositionNum); //Отображение номера хода пользователю
                     button3.Visible = true; //Кнопка "ход назад" видна
+
+                    //Регуляция показа кнопки "ход вперед"
+                    if(PositionNum >= gamehistory.Count-1) //Если номер последнего хода меньше или равно номеру этого хода
+                    {
+                        button4.Visible = false;//Кнопка "ход вперед" НЕ видна
+                    }
+                    else //Если номер последнего хода больше номера этого хода
+                    {
+                        for(int i = gamehistory.Count-1; i > PositionNum ; i--) //От последней позиции в истории до этой позиции
+                        {
+                            gamehistory.RemoveAt(i); //Удалить из истории позицию номер i
+                        }
+                        button4.Visible = false;//Кнопка "ход вперед" НЕ видна
+                    }
+
+                    
+                    
+                    
                 }
             }
 
@@ -759,6 +778,8 @@ namespace Chess
                 button3.Visible = false; //Кнопка "ход назад" не видна
             }
             
+            button4.Visible = true;//Кнопка "ход вперед" видна
+
 
         }
 
@@ -785,8 +806,15 @@ namespace Chess
             SwitchPlayer();//Смена игрока
 
             label2.Text = Convert.ToString(PositionNum); //Отображение номера хода пользователю
+                                                         
+            //Регуляция показа кнопки "ход вперед"
+            if (PositionNum >= gamehistory.Count - 1) //Если номер последнего хода меньше или равно номеру этого хода
+            {
+                button4.Visible = false;//Кнопка "ход вперед" НЕ видна
+            }
 
-            
+            button3.Visible = true; //Кнопка "ход назад" видна
+
         }
 
 
