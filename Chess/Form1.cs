@@ -5,6 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -14,6 +15,8 @@ namespace Chess
     {
         public Image chessSprites;
 
+        public int TurningCode = 0; //Код превращений для пешки на краю доски
+        
         public int PositionNum = 0;
         
         public int[,] StartMap = new int[8, 8] //Изначальная расстановка фигур
@@ -41,6 +44,15 @@ namespace Chess
         public Point prevCastlePlaceForCastling = new Point(); //Предыдущее место ладьи для рокировки
         public Point CastlePlaceForCastling = new Point(); //Место ладьи для рокировки
 
+        //Кнопки превращений пешек
+        Button Queen = new Button();//Создание кнопки "Превратить пешку в королеву"
+        Button Officer = new Button();//Создание кнопки "Превратить пешку в офицера"
+        Button Hourse = new Button();//Создание кнопки "Превратить пешку в коня"
+        Button Castle = new Button();//Создание кнопки "Превратить пешку в ладью"
+
+        //Запись координат пешки на краю доски
+        int PawnI; //I пешки
+        int PawnJ; //J пешки
 
         public bool isMoving = false; // Буллеровкая переменная - происходит ли ход?
         public Form1()
@@ -262,6 +274,8 @@ namespace Chess
                     //Поменять  изображения кнопок местами
                     pressedButton.BackgroundImage = prevButton.BackgroundImage;
                     prevButton.BackgroundImage = null;
+                    
+                    
 
                     //если кнопка рокировочная, 
                     
@@ -303,6 +317,8 @@ namespace Chess
                         ReDrawMap(); //Перерисовать
                     }
                     
+                    
+                    
                     isMoving = false; //Завершить ход
 
                     
@@ -313,12 +329,16 @@ namespace Chess
 
                     PositionNum++; //Увеличить номер позиции
 
-                    
                     if(map[pressedButton.Location.Y / 50, pressedButton.Location.X / 50]%10 == 6 && (pressedButton.Location.Y / 50 == 7 || pressedButton.Location.Y / 50 == 0)) //Если пешка на краю поля
                     {
-                        map[pressedButton.Location.Y / 50, pressedButton.Location.X / 50] -= 4; //Запись пешки как королевы
-                        ReDrawMap(); //Перерисовка карты 
+                        ShowChooseButtonsForPawns();//Показать кнопки превращений пешки
+
+                        DeactivateAllButtons(); //Деактивировать все кнопки (кроме кнопок превращений пешки)
+
+                        PawnI = pressedButton.Location.Y / 50; //записать I пешки
+                        PawnJ = pressedButton.Location.X / 50; //записать J пешки
                     }
+                    
 
                     
                     
@@ -386,8 +406,9 @@ namespace Chess
             ReInit();//Перезапуск игры
         }
 
-        public void DeactivateAllButtons()
+        public void DeactivateAllButtons() //Деактивировать все кнопки
         {
+            //Перебор матрицы кнопок
             for (int i = 0; i < 8; i++)
             {
                 for (int j = 0; j < 8; j++)
@@ -395,10 +416,17 @@ namespace Chess
                     butts[i, j].Enabled = false;
                 }
             }
+            
+
+            button2.Enabled = false; //кнопка Reset
+            button3.Enabled = false; //кнопка ход назад
+            button4.Enabled = false; //кнопка ход вперед
+
         }
 
-        public void ActivateAllButtons()
+        public void ActivateAllButtons() //Активировать все кнопки
         {
+            //Перебор матрицы кнопок
             for (int i = 0; i < 8; i++)
             {
                 for (int j = 0; j < 8; j++)
@@ -406,6 +434,10 @@ namespace Chess
                     butts[i, j].Enabled = true;
                 }
             }
+
+            button2.Enabled = true; //кнопка Reset
+            button3.Enabled = true; //кнопка ход назад
+            button4.Enabled = true; //кнопка ход вперед
         }
 
         public void CloseSteps() //Закраска шахмат после хода
@@ -451,12 +483,12 @@ namespace Chess
                         {
                             butts[IcurrFigure + 1 * dir, JcurrFigure].BackColor = Color.Yellow; //Окрасить клетку
                             butts[IcurrFigure + 1 * dir, JcurrFigure].Enabled = true; //Сделать клетку доступной к нажатию
-                        }
 
-                        if ((IcurrFigure == 1 && currPlayer == 1 || IcurrFigure == 6 && currPlayer == 2) & map[IcurrFigure + 2 * dir, JcurrFigure] == 0) // Если есть возможность сделать два хода вперед
-                        {
-                            butts[IcurrFigure + 2 * dir, JcurrFigure].BackColor = Color.Yellow; //Окрасить клетку
-                            butts[IcurrFigure + 2 * dir, JcurrFigure].Enabled = true; //Сделать клетку доступной к нажатию
+                            if ((IcurrFigure == 1 && currPlayer == 1 || IcurrFigure == 6 && currPlayer == 2) & map[IcurrFigure + 2 * dir, JcurrFigure] == 0) // Если есть возможность сделать два хода вперед
+                            {
+                                butts[IcurrFigure + 2 * dir, JcurrFigure].BackColor = Color.Yellow; //Окрасить клетку
+                                butts[IcurrFigure + 2 * dir, JcurrFigure].Enabled = true; //Сделать клетку доступной к нажатию
+                            }
                         }
                     }
 
@@ -817,11 +849,169 @@ namespace Chess
 
         }
 
+        public void ShowChooseButtonsForPawns() //Показать кнопки превращений пешки
+        {
+            this.Size = new Size(490, 500);//Расширение поля вниз
+            
+            
+            
+            //Создание кнопки "Превратить пешку в королеву"
+            
+            Queen.Size = new Size(50, 50); //Размер кнопки 50 на 50
+            Queen.Location = new Point(0, 410); //Задаем кнопки местоположение под доской
+            Image part = new Bitmap(50, 50); // Инициализация картинки для фигуры
+            Graphics g = Graphics.FromImage(part); //создание Graphics для картинки
+            if(currPlayer == 1) //Если играют белые
+            {
+                g.DrawImage(chessSprites, new Rectangle(0, 0, 50, 50), 0 + 150 * 1, 150, 150, 150, GraphicsUnit.Pixel); //Взятие кусочка картинки с фигурами, для одной фигуры
+            }
+            else //Если играют черные
+            {
+                g.DrawImage(chessSprites, new Rectangle(0, 0, 50, 50), 0 + 150 * 1, 0, 150, 150, GraphicsUnit.Pixel); //Взятие кусочка картинки с фигурами, для одной фигуры
+            }
+            
+            Queen.BackgroundImage = part; //Прилепливаем картинку на кнопку
+            Queen.BackColor = Color.LightGreen; //Окрашиваем кноку в зеленый цвет
+            Controls.Add(Queen); //Добавление кнопки в Controls
 
+            Queen.Click += new EventHandler(QueenClick); // Добавление кнопки к общей функции обработки клика по этой кнопке
+
+
+
+
+
+            //Создание кнопки "Превратить пешку в офицера"
+
+            Officer.Size = new Size(50, 50); //Размер кнопки 50 на 50
+            Officer.Location = new Point(50, 410); //Задаем кнопки местоположение под доской, правее ферзя
+            Image part2 = new Bitmap(50, 50); // Инициализация картинки для фигуры
+            Graphics g2 = Graphics.FromImage(part2); //создание Graphics для картинки
+            if (currPlayer == 1) //Если играют белые
+            {
+                g2.DrawImage(chessSprites, new Rectangle(0, 0, 50, 50), 0 + 150 * 2, 0, 150, 150, GraphicsUnit.Pixel); //Взятие кусочка картинки с фигурами, для одной фигуры
+            }
+            else //Если играют черные
+            {
+                g2.DrawImage(chessSprites, new Rectangle(0, 0, 50, 50), 0 + 150 * 2, 0, 150, 150, GraphicsUnit.Pixel); //Взятие кусочка картинки с фигурами, для одной фигуры
+            }
+
+            Officer.BackgroundImage = part2; //Прилепливаем картинку на кнопку
+            Officer.BackColor = Color.LightGreen; //Окрашиваем кноку в зеленый цвет
+            Controls.Add(Officer); //Добавление кнопки в Controls
+
+            Officer.Click += new EventHandler(OfficerClick); // Добавление кнопки к общей функции обработки клика по этой кнопке
+
+
+
+
+
+
+            //Создание кнопки "Превратить пешку в коня"
+
+            Hourse.Size = new Size(50, 50); //Размер кнопки 50 на 50
+            Hourse.Location = new Point(100, 410); //Задаем кнопки местоположение под доской, правее ферзя
+            Image part3 = new Bitmap(50, 50); // Инициализация картинки для фигуры
+            Graphics g3 = Graphics.FromImage(part3); //создание Graphics для картинки
+            if (currPlayer == 1) //Если играют белые
+            {
+                g3.DrawImage(chessSprites, new Rectangle(0, 0, 50, 50), 0 + 150 * 3, 0, 150, 150, GraphicsUnit.Pixel); //Взятие кусочка картинки с фигурами, для одной фигуры
+            }
+            else //Если играют черные
+            {
+                g3.DrawImage(chessSprites, new Rectangle(0, 0, 50, 50), 0 + 150 * 3, 0, 150, 150, GraphicsUnit.Pixel); //Взятие кусочка картинки с фигурами, для одной фигуры
+            }
+
+            Hourse.BackgroundImage = part3; //Прилепливаем картинку на кнопку
+            Hourse.BackColor = Color.LightGreen; //Окрашиваем кноку в зеленый цвет
+            Controls.Add(Hourse); //Добавление кнопки в Controls
+
+            Hourse.Click += new EventHandler(HourseClick); // Добавление кнопки к общей функции обработки клика по этой кнопке
+
+
+
+
+            //Создание кнопки "Превратить пешку в ладью"
+
+            Castle.Size = new Size(50, 50); //Размер кнопки 50 на 50
+            Castle.Location = new Point(150, 410); //Задаем кнопки местоположение под доской, правее ферзя
+            Image part4 = new Bitmap(50, 50); // Инициализация картинки для фигуры
+            Graphics g4 = Graphics.FromImage(part4); //создание Graphics для картинки
+            if (currPlayer == 1) //Если играют белые
+            {
+                g4.DrawImage(chessSprites, new Rectangle(0, 0, 50, 50), 0 + 150 * 4, 0, 150, 150, GraphicsUnit.Pixel); //Взятие кусочка картинки с фигурами, для одной фигуры
+            }
+            else //Если играют черные
+            {
+                g4.DrawImage(chessSprites, new Rectangle(0, 0, 50, 50), 0 + 150 * 4, 0, 150, 150, GraphicsUnit.Pixel); //Взятие кусочка картинки с фигурами, для одной фигуры
+            }
+
+            Castle.BackgroundImage = part4; //Прилепливаем картинку на кнопку
+            Castle.BackColor = Color.LightGreen; //Окрашиваем кноку в зеленый цвет
+            Controls.Add(Castle); //Добавление кнопки в Controls
+
+            Castle.Click += new EventHandler(CastleClick); // Добавление кнопки к общей функции обработки клика по этой кнопке
+
+
+            
+
+        }
+
+
+        private void CastleClick(object sender, EventArgs e)
+        {
+            map[PawnI, PawnJ] -= 1; //Запись пешки как ладьи
+            ActivateAllButtons(); //Активировать все кнопки
+            ReDrawMap(); //Перерисовка карты 
+            this.Size = new Size(490, 440);
+
+            //if (PositionNum >= gamehistory.Count - 1) //Если номер последнего хода меньше или равно номеру этого хода
+            //{
+            //    gamehistory[PositionNum][PawnI, PawnJ] = currPlayer*10 + 5; //запись превращения в историю
+            //}
+        }
+
+        private void HourseClick(object sender, EventArgs e)
+        {
+            map[PawnI, PawnJ] -= 2; //Запись пешки как коня
+            ActivateAllButtons(); //Активировать все кнопки
+            ReDrawMap(); //Перерисовка карты 
+            this.Size = new Size(490, 440);
+
+            //if (PositionNum == gamehistory.Count - 1) //Если номер последнего хода меньше или равно номеру этого хода
+            //{
+            //    gamehistory[PositionNum][PawnI, PawnJ] = currPlayer * 10 + 4; //запись превращения в историю
+            //}
+        }
+
+        private void OfficerClick(object sender, EventArgs e)
+        {
+            map[PawnI, PawnJ] -= 3; //Запись пешки как офицера
+            ActivateAllButtons(); //Активировать все кнопки
+            ReDrawMap(); //Перерисовка карты 
+            this.Size = new Size(490, 440);
+
+            //if (PositionNum == gamehistory.Count - 1) //Если номер последнего хода меньше или равно номеру этого хода
+            //{
+            //    gamehistory[PositionNum][PawnI, PawnJ] = currPlayer * 10 + 3; //запись превращения в историю
+            //}
+        }
+
+        private void QueenClick(object sender, EventArgs e)
+        {
+            map[PawnI, PawnJ] -= 4; //Запись пешки как королевы
+            ActivateAllButtons(); //Активировать все кнопки
+            ReDrawMap(); //Перерисовка карты 
+            this.Size = new Size(490, 440);
+
+            //if (PositionNum == gamehistory.Count - 1) //Если номер последнего хода меньше или равно номеру этого хода
+            //{
+            //    gamehistory[PositionNum][PawnI, PawnJ] = currPlayer * 10 + 2; //запись превращения в историю
+            //}
+        }
 
         private void label1_Click(object sender, EventArgs e)
         {
-
+            
         }
 
         private void Form1_Load(object sender, EventArgs e)
