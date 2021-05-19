@@ -959,15 +959,15 @@ namespace Chess
 
         private void CastleClick(object sender, EventArgs e)
         {
-            map[PawnI, PawnJ] -= 1; //Запись пешки как ладьи
+            map[PawnI, PawnJ] = (1 + currPlayer % 2) * 10 + 5; //Запись пешки как ладьи
             ActivateAllButtons(); //Активировать все кнопки
             ReDrawMap(); //Перерисовка карты 
             this.Size = new Size(490, 440);
 
-            //if (PositionNum >= gamehistory.Count - 1) //Если номер последнего хода меньше или равно номеру этого хода
-            //{
-            //    gamehistory[PositionNum][PawnI, PawnJ] = currPlayer*10 + 5; //запись превращения в историю
-            //}
+            if (PositionNum >= gamehistory.Count - 1) //Если номер последнего хода меньше или равно номеру этого хода
+            {
+                gamehistory[PositionNum][PawnI, PawnJ] = (1 + currPlayer % 2) * 10 + 5; //запись превращения в историю
+            }
             //Очистка Controls
             Controls.Remove(Castle);
             Controls.Remove(Hourse);
