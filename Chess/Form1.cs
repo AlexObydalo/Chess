@@ -888,7 +888,7 @@ namespace Chess
             Graphics g2 = Graphics.FromImage(part2); //создание Graphics для картинки
             if (currPlayer == 1) //Если играют белые
             {
-                g2.DrawImage(chessSprites, new Rectangle(0, 0, 50, 50), 0 + 150 * 2, 0, 150, 150, GraphicsUnit.Pixel); //Взятие кусочка картинки с фигурами, для одной фигуры
+                g2.DrawImage(chessSprites, new Rectangle(0, 0, 50, 50), 0 + 150 * 2, 150, 150, 150, GraphicsUnit.Pixel); //Взятие кусочка картинки с фигурами, для одной фигуры
             }
             else //Если играют черные
             {
@@ -914,7 +914,7 @@ namespace Chess
             Graphics g3 = Graphics.FromImage(part3); //создание Graphics для картинки
             if (currPlayer == 1) //Если играют белые
             {
-                g3.DrawImage(chessSprites, new Rectangle(0, 0, 50, 50), 0 + 150 * 3, 0, 150, 150, GraphicsUnit.Pixel); //Взятие кусочка картинки с фигурами, для одной фигуры
+                g3.DrawImage(chessSprites, new Rectangle(0, 0, 50, 50), 0 + 150 * 3, 150, 150, 150, GraphicsUnit.Pixel); //Взятие кусочка картинки с фигурами, для одной фигуры
             }
             else //Если играют черные
             {
@@ -938,7 +938,7 @@ namespace Chess
             Graphics g4 = Graphics.FromImage(part4); //создание Graphics для картинки
             if (currPlayer == 1) //Если играют белые
             {
-                g4.DrawImage(chessSprites, new Rectangle(0, 0, 50, 50), 0 + 150 * 4, 0, 150, 150, GraphicsUnit.Pixel); //Взятие кусочка картинки с фигурами, для одной фигуры
+                g4.DrawImage(chessSprites, new Rectangle(0, 0, 50, 50), 0 + 150 * 4, 150, 150, 150, GraphicsUnit.Pixel); //Взятие кусочка картинки с фигурами, для одной фигуры
             }
             else //Если играют черные
             {
@@ -968,45 +968,65 @@ namespace Chess
             //{
             //    gamehistory[PositionNum][PawnI, PawnJ] = currPlayer*10 + 5; //запись превращения в историю
             //}
+            //Очистка Controls
+            Controls.Remove(Castle);
+            Controls.Remove(Hourse);
+            Controls.Remove(Officer);
+            Controls.Remove(Queen);
         }
 
         private void HourseClick(object sender, EventArgs e)
         {
-            map[PawnI, PawnJ] -= 2; //Запись пешки как коня
+            map[PawnI, PawnJ] = (1 + currPlayer%2) * 10 + 4; //Запись пешки как коня
             ActivateAllButtons(); //Активировать все кнопки
             ReDrawMap(); //Перерисовка карты 
             this.Size = new Size(490, 440);
 
-            //if (PositionNum == gamehistory.Count - 1) //Если номер последнего хода меньше или равно номеру этого хода
-            //{
-            //    gamehistory[PositionNum][PawnI, PawnJ] = currPlayer * 10 + 4; //запись превращения в историю
-            //}
+            if (PositionNum == gamehistory.Count - 1) //Если номер последнего хода меньше или равно номеру этого хода
+            {
+                gamehistory[PositionNum][PawnI, PawnJ] = (1 + currPlayer % 2) * 10 + 4; //запись превращения в историю
+            }
+            //Очистка Controls
+            Controls.Remove(Castle);
+            Controls.Remove(Hourse);
+            Controls.Remove(Officer);
+            Controls.Remove(Queen);
         }
 
         private void OfficerClick(object sender, EventArgs e)
         {
-            map[PawnI, PawnJ] -= 3; //Запись пешки как офицера
+            map[PawnI, PawnJ] = (1 + currPlayer % 2) * 10 + 3; //Запись пешки как офицера
             ActivateAllButtons(); //Активировать все кнопки
             ReDrawMap(); //Перерисовка карты 
             this.Size = new Size(490, 440);
 
-            //if (PositionNum == gamehistory.Count - 1) //Если номер последнего хода меньше или равно номеру этого хода
-            //{
-            //    gamehistory[PositionNum][PawnI, PawnJ] = currPlayer * 10 + 3; //запись превращения в историю
-            //}
+            if (PositionNum == gamehistory.Count - 1) //Если номер последнего хода меньше или равно номеру этого хода
+            {
+                gamehistory[PositionNum][PawnI, PawnJ] = (1 + currPlayer % 2) * 10 + 3; //запись превращения в историю
+            }
+            //Очистка Controls
+            Controls.Remove(Castle);
+            Controls.Remove(Hourse);
+            Controls.Remove(Officer);
+            Controls.Remove(Queen);
         }
 
         private void QueenClick(object sender, EventArgs e)
         {
-            map[PawnI, PawnJ] -= 4; //Запись пешки как королевы
+            map[PawnI, PawnJ] = (1 + currPlayer % 2) * 10 + 2; //Запись пешки как королевы
             ActivateAllButtons(); //Активировать все кнопки
             ReDrawMap(); //Перерисовка карты 
             this.Size = new Size(490, 440);
 
-            //if (PositionNum == gamehistory.Count - 1) //Если номер последнего хода меньше или равно номеру этого хода
-            //{
-            //    gamehistory[PositionNum][PawnI, PawnJ] = currPlayer * 10 + 2; //запись превращения в историю
-            //}
+            if (PositionNum == gamehistory.Count - 1) //Если номер последнего хода меньше или равно номеру этого хода
+            {
+                gamehistory[PositionNum][PawnI, PawnJ] = (1 + currPlayer % 2) * 10 + 2; //запись превращения в историю
+            }
+            //Очистка Controls
+            Controls.Remove(Castle);
+            Controls.Remove(Hourse);
+            Controls.Remove(Officer);
+            Controls.Remove(Queen);
         }
 
         private void label1_Click(object sender, EventArgs e)
