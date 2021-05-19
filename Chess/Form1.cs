@@ -690,7 +690,7 @@ namespace Chess
                 if(IsTrerePlaceForShortCastling()) //Если место между королем и правой ладьей свободно
                 {
                     butts[IcurrFigure, JcurrFigure + 2].Enabled = true; //Сделать клетку на два хода вправо от короля доступной к нажатию
-                    butts[IcurrFigure, JcurrFigure + 2].BackColor = Color.Red; //Сделать клетку на два хода вправо от короля красной
+                    butts[IcurrFigure, JcurrFigure + 2].BackColor = Color.Orange; //Сделать клетку на два хода вправо от короля красной
                     //запомнить эту клетку и клетку, куда ставить ладью
                     prevCastlePlaceForCastling = new Point(IcurrFigure, JcurrFigure + 3);
                     prevCastlePlaceForCastling = new Point(IcurrFigure, JcurrFigure + 1);
@@ -705,8 +705,8 @@ namespace Chess
                 if (IsTrerePlaceForLongCastling()) //Если место между королем и левой ладьей свободно
                 {
                     butts[IcurrFigure, JcurrFigure - 2].Enabled = true; //Сделать клетку на два хода влево от короля доступной к нажатию
-                    butts[IcurrFigure, JcurrFigure - 2].BackColor = Color.Red; //Сделать клетку на два хода влево от короля красной
-                    
+                    butts[IcurrFigure, JcurrFigure - 2].BackColor = Color.Orange; //Сделать клетку на два хода влево от короля красной
+
                     //запомнить эту клетку и клетку, куда ставить ладью
                     prevCastlePlaceForCastling = new Point(IcurrFigure, JcurrFigure - 4);
                     prevCastlePlaceForCastling = new Point(IcurrFigure, JcurrFigure - 1);
