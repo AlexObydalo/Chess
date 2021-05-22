@@ -498,14 +498,17 @@ namespace Chess
                                 butts[IcurrFigure + 1 * dir, JcurrFigure].Enabled = true; //Сделать клетку доступной к нажатию
                             }
 
-                            if ((IcurrFigure == 1 && currPlayer == 1 || IcurrFigure == 6 && currPlayer == 2) & map[IcurrFigure + 2 * dir, JcurrFigure] == 0) // Если есть возможность сделать два хода вперед
+                            if (InsideBorder(IcurrFigure + 2 * dir, JcurrFigure)) //Находиться ли прямой двойной ход пешкой в пределах доски
                             {
-                                if (!CanPathGiveUsCheck(IcurrFigure, JcurrFigure, IcurrFigure + 2 * dir, JcurrFigure))//Если после хода наш король не под ударом
+                                if ((IcurrFigure == 1 && currPlayer == 1 || IcurrFigure == 6 && currPlayer == 2) & map[IcurrFigure + 2 * dir, JcurrFigure] == 0) // Если есть возможность сделать два хода вперед
                                 {
-                                    butts[IcurrFigure + 2 * dir, JcurrFigure].BackColor = Color.Yellow; //Окрасить клетку
-                                    butts[IcurrFigure + 2 * dir, JcurrFigure].Enabled = true; //Сделать клетку доступной к нажатию
+                                    if (!CanPathGiveUsCheck(IcurrFigure, JcurrFigure, IcurrFigure + 2 * dir, JcurrFigure))//Если после хода наш король не под ударом
+                                    {
+                                        butts[IcurrFigure + 2 * dir, JcurrFigure].BackColor = Color.Yellow; //Окрасить клетку
+                                        butts[IcurrFigure + 2 * dir, JcurrFigure].Enabled = true; //Сделать клетку доступной к нажатию
+                                    }
                                 }
-                            }
+                            }   
                         }
                     }
 
