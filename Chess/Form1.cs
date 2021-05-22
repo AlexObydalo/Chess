@@ -492,13 +492,19 @@ namespace Chess
                     {
                         if (map[IcurrFigure + 1 * dir, JcurrFigure] == 0) //Если на клетке нет фигур
                         {
-                            butts[IcurrFigure + 1 * dir, JcurrFigure].BackColor = Color.Yellow; //Окрасить клетку
-                            butts[IcurrFigure + 1 * dir, JcurrFigure].Enabled = true; //Сделать клетку доступной к нажатию
+                            if (!CanPathGiveUsCheck(IcurrFigure, JcurrFigure, IcurrFigure + 1 * dir, JcurrFigure))//Если после хода наш король не под ударом
+                            {
+                                butts[IcurrFigure + 1 * dir, JcurrFigure].BackColor = Color.Yellow; //Окрасить клетку
+                                butts[IcurrFigure + 1 * dir, JcurrFigure].Enabled = true; //Сделать клетку доступной к нажатию
+                            }
 
                             if ((IcurrFigure == 1 && currPlayer == 1 || IcurrFigure == 6 && currPlayer == 2) & map[IcurrFigure + 2 * dir, JcurrFigure] == 0) // Если есть возможность сделать два хода вперед
                             {
-                                butts[IcurrFigure + 2 * dir, JcurrFigure].BackColor = Color.Yellow; //Окрасить клетку
-                                butts[IcurrFigure + 2 * dir, JcurrFigure].Enabled = true; //Сделать клетку доступной к нажатию
+                                if (!CanPathGiveUsCheck(IcurrFigure, JcurrFigure, IcurrFigure + 2 * dir, JcurrFigure))//Если после хода наш король не под ударом
+                                {
+                                    butts[IcurrFigure + 2 * dir, JcurrFigure].BackColor = Color.Yellow; //Окрасить клетку
+                                    butts[IcurrFigure + 2 * dir, JcurrFigure].Enabled = true; //Сделать клетку доступной к нажатию
+                                }
                             }
                         }
                     }
@@ -507,16 +513,22 @@ namespace Chess
                     {
                         if (map[IcurrFigure + 1 * dir, JcurrFigure + 1] != 0 && map[IcurrFigure + 1 * dir, JcurrFigure + 1] / 10 != currPlayer) //Два условия: клетка не пуста, фигура на ней - вражеская
                         {
-                            butts[IcurrFigure + 1 * dir, JcurrFigure + 1].BackColor = Color.Yellow; //Окрасить клетку
-                            butts[IcurrFigure + 1 * dir, JcurrFigure + 1].Enabled = true; //Сделать клетку доступной к нажатию
+                            if (!CanPathGiveUsCheck(IcurrFigure, JcurrFigure, IcurrFigure + 1 * dir, JcurrFigure + 1))//Если после хода наш король не под ударом
+                            {
+                                butts[IcurrFigure + 1 * dir, JcurrFigure+1].BackColor = Color.Yellow; //Окрасить клетку
+                                butts[IcurrFigure + 1 * dir, JcurrFigure+1].Enabled = true; //Сделать клетку доступной к нажатию
+                            }
                         }
                     }
                     if (InsideBorder(IcurrFigure + 1 * dir, JcurrFigure - 1)) ////Находиться ли левый атакующий (косой) ход пешкой в пределах доски
                     {
                         if (map[IcurrFigure + 1 * dir, JcurrFigure - 1] != 0 && map[IcurrFigure + 1 * dir, JcurrFigure - 1] / 10 != currPlayer) //Два условия: клетка не пуста, фигура на ней - вражеская
                         {
-                            butts[IcurrFigure + 1 * dir, JcurrFigure - 1].BackColor = Color.Yellow; //Окрасить клетку
-                            butts[IcurrFigure + 1 * dir, JcurrFigure - 1].Enabled = true; //Сделать клетку доступной к нажатию
+                            if (!CanPathGiveUsCheck(IcurrFigure, JcurrFigure, IcurrFigure + 1 * dir, JcurrFigure - 1))//Если после хода наш король не под ударом
+                            {
+                                butts[IcurrFigure + 1 * dir, JcurrFigure - 1].BackColor = Color.Yellow; //Окрасить клетку
+                                butts[IcurrFigure + 1 * dir, JcurrFigure - 1].Enabled = true; //Сделать клетку доступной к нажатию
+                            }
                         }
                     }
                     break;
@@ -547,35 +559,35 @@ namespace Chess
         {
             if (InsideBorder(IcurrFigure - 2, JcurrFigure + 1)) //Клетка в пределах доски
             {
-                DeterminePath(IcurrFigure - 2, JcurrFigure + 1); //Есть ли на клетке фигура + метод выделения доступной клетки
+                DeterminePath(IcurrFigure, JcurrFigure, IcurrFigure - 2, JcurrFigure + 1); //Есть ли на клетке фигура + метод выделения доступной клетки
             }
             if (InsideBorder(IcurrFigure - 2, JcurrFigure - 1)) //Клетка в пределах доски
             {
-                DeterminePath(IcurrFigure - 2, JcurrFigure - 1); //Есть ли на клетке фигура + метод выделения доступной клетки
+                DeterminePath(IcurrFigure, JcurrFigure, IcurrFigure - 2, JcurrFigure - 1); //Есть ли на клетке фигура + метод выделения доступной клетки
             }
             if (InsideBorder(IcurrFigure + 2, JcurrFigure + 1)) //Клетка в пределах доски
             {
-                DeterminePath(IcurrFigure + 2, JcurrFigure + 1); //Есть ли на клетке фигура + метод выделения доступной клетки
+                DeterminePath(IcurrFigure, JcurrFigure, IcurrFigure + 2, JcurrFigure + 1); //Есть ли на клетке фигура + метод выделения доступной клетки
             }
             if (InsideBorder(IcurrFigure + 2, JcurrFigure - 1)) //Клетка в пределах доски
             {
-                DeterminePath(IcurrFigure + 2, JcurrFigure - 1); //Есть ли на клетке фигура + метод выделения доступной клетки
+                DeterminePath(IcurrFigure, JcurrFigure, IcurrFigure + 2, JcurrFigure - 1); //Есть ли на клетке фигура + метод выделения доступной клетки
             }
             if (InsideBorder(IcurrFigure - 1, JcurrFigure + 2)) //Клетка в пределах доски
             {
-                DeterminePath(IcurrFigure - 1, JcurrFigure + 2); //Есть ли на клетке фигура + метод выделения доступной клетки
+                DeterminePath(IcurrFigure, JcurrFigure, IcurrFigure - 1, JcurrFigure + 2); //Есть ли на клетке фигура + метод выделения доступной клетки
             }
             if (InsideBorder(IcurrFigure + 1, JcurrFigure + 2)) //Клетка в пределах доски
             {
-                DeterminePath(IcurrFigure + 1, JcurrFigure + 2); //Есть ли на клетке фигура + метод выделения доступной клетки
+                DeterminePath(IcurrFigure, JcurrFigure, IcurrFigure + 1, JcurrFigure + 2); //Есть ли на клетке фигура + метод выделения доступной клетки
             }
             if (InsideBorder(IcurrFigure - 1, JcurrFigure - 2)) //Клетка в пределах доски
             {
-                DeterminePath(IcurrFigure - 1, JcurrFigure - 2); //Есть ли на клетке фигура + метод выделения доступной клетки
+                DeterminePath(IcurrFigure, JcurrFigure, IcurrFigure - 1, JcurrFigure - 2); //Есть ли на клетке фигура + метод выделения доступной клетки
             }
             if (InsideBorder(IcurrFigure + 1, JcurrFigure - 2)) //Клетка в пределах доски
             {
-                DeterminePath(IcurrFigure + 1, JcurrFigure - 2); //Есть ли на клетке фигура + метод выделения доступной клетки
+                DeterminePath(IcurrFigure, JcurrFigure, IcurrFigure + 1, JcurrFigure - 2); //Есть ли на клетке фигура + метод выделения доступной клетки
             }
         }
 
@@ -588,7 +600,7 @@ namespace Chess
             {
                 if (InsideBorder(i, j))
                 {
-                    if (!DeterminePath(i, j))
+                    if (!DeterminePath(IcurrFigure, JcurrFigure, i, j))
                         break;
                 }
                 if (j < 7)
@@ -604,7 +616,7 @@ namespace Chess
             {
                 if (InsideBorder(i, j))
                 {
-                    if (!DeterminePath(i, j))
+                    if (!DeterminePath(IcurrFigure, JcurrFigure, i, j))
                         break;
                 }
                 if (j > 0)
@@ -620,7 +632,7 @@ namespace Chess
             {
                 if (InsideBorder(i, j))
                 {
-                    if (!DeterminePath(i, j))
+                    if (!DeterminePath(IcurrFigure, JcurrFigure, i, j))
                         break;
                 }
                 if (j > 0)
@@ -636,7 +648,7 @@ namespace Chess
             {
                 if (InsideBorder(i, j))
                 {
-                    if (!DeterminePath(i, j))
+                    if (!DeterminePath(IcurrFigure, JcurrFigure, i, j))
                         break;
                 }
                 if (j < 7)
@@ -655,7 +667,7 @@ namespace Chess
             {
                 if (InsideBorder(i, JcurrFigure)) //Клетка в пределах доски
                 {
-                    if (!DeterminePath(i, JcurrFigure)) //Есть ли на клетке фигура + метод выделения доступной клетки
+                    if (!DeterminePath(IcurrFigure, JcurrFigure, i, JcurrFigure)) //Есть ли на клетке фигура + метод выделения доступной клетки
                         break;
                 }
                 if (isOneStep) //Если у фигуры только один ход
@@ -665,7 +677,7 @@ namespace Chess
             {
                 if (InsideBorder(i, JcurrFigure)) //Клетка в пределах доски
                 {
-                    if (!DeterminePath(i, JcurrFigure)) //Есть ли на клетке фигура + метод выделения доступной клетки
+                    if (!DeterminePath(IcurrFigure, JcurrFigure, i, JcurrFigure)) //Есть ли на клетке фигура + метод выделения доступной клетки
                         break;
                 }
                 if (isOneStep) //Если у фигуры только один ход
@@ -675,7 +687,7 @@ namespace Chess
             {
                 if (InsideBorder(IcurrFigure, j)) //Клетка в пределах доски
                 {
-                    if (!DeterminePath(IcurrFigure, j)) //Есть ли на клетке фигура + метод выделения доступной клетки
+                    if (!DeterminePath(IcurrFigure, JcurrFigure, IcurrFigure, j)) //Есть ли на клетке фигура + метод выделения доступной клетки
                         break;
                 }
                 if (isOneStep) //Если у фигуры только один ход
@@ -685,7 +697,7 @@ namespace Chess
             {
                 if (InsideBorder(IcurrFigure, j)) //Клетка в пределах доски
                 {
-                    if (!DeterminePath(IcurrFigure, j)) //Есть ли на клетке фигура + метод выделения доступной клетки
+                    if (!DeterminePath(IcurrFigure, JcurrFigure, IcurrFigure, j)) //Есть ли на клетке фигура + метод выделения доступной клетки
                         break;
                 }
                 if (isOneStep) //Если у фигуры только один ход
@@ -774,19 +786,25 @@ namespace Chess
 
 
 
-        public bool DeterminePath(int IcurrFigure, int j) //Обозначить доступную клетку, и узнать есть ли на ней фигура
+        public bool DeterminePath(int I1, int J1, int I2, int J2) //Обозначить доступную клетку, и узнать есть ли на ней фигура
         {
-            if (map[IcurrFigure, j] == 0) //Если клетка пуста
+            if (map[I2, J2] == 0) //Если клетка пуста
             {
-                butts[IcurrFigure, j].BackColor = Color.Yellow;
-                butts[IcurrFigure, j].Enabled = true;
+                if (!CanPathGiveUsCheck(I1, J1, I2, J2)) //Если при ходе наш король не под шахом
+                {
+                    butts[I2, J2].BackColor = Color.Yellow;
+                    butts[I2, J2].Enabled = true;
+                }
             }
             else
             {
-                if (map[IcurrFigure, j] / 10 != currPlayer) //Если на клетке фигура врага
+                if (map[I2, J2] / 10 != currPlayer) //Если на клетке фигура врага
                 {
-                    butts[IcurrFigure, j].BackColor = Color.Yellow;
-                    butts[IcurrFigure, j].Enabled = true;
+                    if (!CanPathGiveUsCheck(I1, J1, I2, J2)) //Если при ходе наш король не под шахом
+                    {
+                        butts[I2, J2].BackColor = Color.Yellow;
+                        butts[I2, J2].Enabled = true;
+                    }
                 }
                 return false;
             }
@@ -1407,6 +1425,31 @@ namespace Chess
                     }
                 }
             }
+        }
+
+        public int[,] MakePheudoPath(int I1, int J1, int I2, int J2 ,int[,] desk1) //Сделать псевдоход
+        {
+            int[,] desk = new int[8,8];
+
+            //Копирование массива desk1 в desk
+            for(int i = 0; i<8; i++)
+            {
+                for (int j = 0; j < 8; j++)
+                {
+                    desk[i, j] = desk1[i, j];
+                }
+            }
+
+            desk[I2, J2] = desk[I1, J1];//Записать в вторую клетку значение первой
+            desk[I1, J1] = 0;//Приравнять значение первой кнопки к нулю
+
+            return desk; //Вернуть массив desk
+
+        }
+
+        public bool CanPathGiveUsCheck(int I1, int J1, int I2, int J2)
+        {
+            return IsThrereCheck(MakePheudoPath(I1, J1, I2, J2, map)); //Есть ли шах на доске, созданной псевдоходом
         }
 
 
