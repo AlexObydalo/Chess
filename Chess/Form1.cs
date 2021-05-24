@@ -136,6 +136,10 @@ namespace Chess
             }
             label2.Text = "0"; //Показать игроку, что сейчас нулевой ход
             label3.Text = "Ход белых"; //Показать игроку, что сейчас ход белых
+
+            //Кнопки "ход назад" и "ход вперед" не видны
+            button3.Visible = false;
+            button4.Visible = false;
         }
 
         // Прорисовка игрового поля
@@ -549,8 +553,12 @@ namespace Chess
                 case 1: //Для короля
                     ShowVerticalHorizontal(IcurrFigure, JcurrFigure, true);
                     ShowDiagonal(IcurrFigure, JcurrFigure, true);
-                    ShowShortCastlingForKing(IcurrFigure, JcurrFigure); //Показать короткую рокировку
-                    ShowLongCastlingForKing(IcurrFigure, JcurrFigure); //Показать длинную рокировку
+                    
+                    if(!IsThrereCheck(map)) //Если нет шаха
+                    {
+                        ShowShortCastlingForKing(IcurrFigure, JcurrFigure); //Показать короткую рокировку
+                        ShowLongCastlingForKing(IcurrFigure, JcurrFigure); //Показать длинную рокировку
+                    }
                     break;
                 case 4: //Для коня
                     ShowHorseSteps(IcurrFigure, JcurrFigure);
@@ -715,11 +723,11 @@ namespace Chess
             {
                 if(IsTrerePlaceForShortCastling()) //Если место между королем и правой ладьей свободно
                 {
-                    butts[IcurrFigure, JcurrFigure + 2].Enabled = true; //Сделать клетку на два хода вправо от короля доступной к нажатию
-                    butts[IcurrFigure, JcurrFigure + 2].BackColor = Color.Orange; //Сделать клетку на два хода вправо от короля красной
-                    //запомнить эту клетку и клетку, куда ставить ладью
-                    prevCastlePlaceForCastling = new Point(IcurrFigure, JcurrFigure + 3);
-                    prevCastlePlaceForCastling = new Point(IcurrFigure, JcurrFigure + 1);
+                    if(!CanPathGiveUsCheck(IcurrFigure, JcurrFigure, IcurrFigure, JcurrFigure + 2)) //Если ход не принесет шаха
+                    {
+                        butts[IcurrFigure, JcurrFigure + 2].Enabled = true; //Сделать клетку на два хода вправо от короля доступной к нажатию
+                        butts[IcurrFigure, JcurrFigure + 2].BackColor = Color.Orange; //Сделать клетку на два хода вправо от короля красной
+                    }
                 }
             }
         }
@@ -730,12 +738,11 @@ namespace Chess
             {
                 if (IsTrerePlaceForLongCastling()) //Если место между королем и левой ладьей свободно
                 {
-                    butts[IcurrFigure, JcurrFigure - 2].Enabled = true; //Сделать клетку на два хода влево от короля доступной к нажатию
-                    butts[IcurrFigure, JcurrFigure - 2].BackColor = Color.Orange; //Сделать клетку на два хода влево от короля красной
-
-                    //запомнить эту клетку и клетку, куда ставить ладью
-                    prevCastlePlaceForCastling = new Point(IcurrFigure, JcurrFigure - 4);
-                    prevCastlePlaceForCastling = new Point(IcurrFigure, JcurrFigure - 1);
+                    if (!CanPathGiveUsCheck(IcurrFigure, JcurrFigure, IcurrFigure, JcurrFigure - 2)) //Если ход не принесет шаха
+                    {
+                        butts[IcurrFigure, JcurrFigure - 2].Enabled = true; //Сделать клетку на два хода вправо от короля доступной к нажатию
+                        butts[IcurrFigure, JcurrFigure - 2].BackColor = Color.Orange; //Сделать клетку на два хода вправо от короля красной
+                    }
                 }
             }
         }
