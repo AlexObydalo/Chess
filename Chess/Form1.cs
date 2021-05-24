@@ -723,7 +723,7 @@ namespace Chess
             {
                 if(IsTrerePlaceForShortCastling()) //Если место между королем и правой ладьей свободно
                 {
-                    if(!CanPathGiveUsCheck(IcurrFigure, JcurrFigure, IcurrFigure, JcurrFigure + 2)) //Если ход не принесет шаха
+                    if(!CanPathGiveUsCheck(IcurrFigure, JcurrFigure, IcurrFigure, JcurrFigure + 1) && !CanPathGiveUsCheck(IcurrFigure, JcurrFigure, IcurrFigure, JcurrFigure + 2)) //Если ход не принесет шаха и король не идет через битое поле.
                     {
                         butts[IcurrFigure, JcurrFigure + 2].Enabled = true; //Сделать клетку на два хода вправо от короля доступной к нажатию
                         butts[IcurrFigure, JcurrFigure + 2].BackColor = Color.Orange; //Сделать клетку на два хода вправо от короля красной
@@ -738,7 +738,7 @@ namespace Chess
             {
                 if (IsTrerePlaceForLongCastling()) //Если место между королем и левой ладьей свободно
                 {
-                    if (!CanPathGiveUsCheck(IcurrFigure, JcurrFigure, IcurrFigure, JcurrFigure - 2)) //Если ход не принесет шаха
+                    if (!CanPathGiveUsCheck(IcurrFigure, JcurrFigure, IcurrFigure, JcurrFigure - 1) && !CanPathGiveUsCheck(IcurrFigure, JcurrFigure, IcurrFigure, JcurrFigure - 2)) //Если ход не принесет шаха и король не идет через битое поле.
                     {
                         butts[IcurrFigure, JcurrFigure - 2].Enabled = true; //Сделать клетку на два хода вправо от короля доступной к нажатию
                         butts[IcurrFigure, JcurrFigure - 2].BackColor = Color.Orange; //Сделать клетку на два хода вправо от короля красной
