@@ -13,6 +13,31 @@ namespace Chess
 {
     public partial class Form1 : Form
     {
+        Dictionary<int, string> FiguresNotation = new Dictionary<int, string> //Словарь записи фигур (в цифрах и буквах)
+        {
+            //Запись фигуры зависит от единицы, в числе на клетке  
+            {1, "Кр." },
+            {2, "Ф." },
+            {3, "С." },
+            {4, "К." },
+            {5, "Л." },
+            {6, "п.п." },
+        };
+
+        Dictionary<int, string> LineNotation = new Dictionary<int, string> //Словарь записи фигур (в цифрах и буквах)
+        {
+            //Буква зависит от единицы, в числе на клетке  
+            {1, "a" },
+            {2, "b" },
+            {3, "c" },
+            {4, "d" },
+            {5, "e" },
+            {6, "f" },
+            {7, "g" },
+            {8, "h" },
+        };
+
+
         public Image chessSprites;
 
         public int TurningCode = 0; //Код превращений для пешки на краю доски
@@ -383,7 +408,7 @@ namespace Chess
                         MakeOurKingRed();//Сделать клетку короля красной
                     }
 
-                    
+                    label5.Text = WriteTurn(gamehistory[PositionNum - 1], gamehistory[PositionNum]); //Высветить ход, сделанный игроком
                     
                     
                 }
@@ -1464,6 +1489,37 @@ namespace Chess
 
 
 
+        public string WriteTurn(int[,] prevdesk, int[,] desk) //Метод записи одного хода в шахматной нотации
+        {
+            string Figure = null; //Обозначение фигуры
+            string FirstPosition = null; //Первая позиция
+            string SecondPosition = null; //Вторая позиция
+            //Перебор предыдущей и этой доски
+            for(int i = 0; i<8; i++)
+            {
+                for (int j = 0; j < 8; j++)
+                {
+                    if(desk[i,j] != prevdesk[i,j]) //Если на клетках разные записи
+                    {
+                        if(prevdesk[i,j]!=0 && desk[i,j] == 0) //Если на клетке предыдущей доски есть фигура, а на этой клетке нет
+                        {
+                            Figure = FiguresNotation[prevdesk[i, j] % 10]; //Запись фигуры исходя из последней цифры по словарю
+                            FirstPosition = $"{LineNotation[j+1]}{i+1}"; //Запись первой позиции. В начале столбец (буква из словаря), затем строка.
+                        }
+                        else  //Если на клетке предыдущей доски нет фигуры, или эта фигура - вражеская
+                        {
+                            SecondPosition = $"{LineNotation[j+1]}{i+1}"; //Запись второй позиции. В начале столбец (буква из словаря), затем строка.
+                        }
+                    }
+                }
+            }
+
+            string Path = $"{Figure}{FirstPosition}-{SecondPosition}"; //Записать ход в последовательности: фигура, первая позиция, вторая позиция.
+
+            return Path;//Вернуть ход
+        }
+
+
         private void label1_Click(object sender, EventArgs e)
         {
             
@@ -1479,4 +1535,5 @@ namespace Chess
 
         }
     }
+
 }
