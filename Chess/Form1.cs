@@ -21,7 +21,7 @@ namespace Chess
             {3, "С." },
             {4, "К." },
             {5, "Л." },
-            {6, "п.п." },
+            {6, "п." },
         };
 
         Dictionary<int, string> LineNotation = new Dictionary<int, string> //Словарь записи фигур (в цифрах и буквах)
@@ -1491,9 +1491,20 @@ namespace Chess
 
         public string WriteTurn(int[,] prevdesk, int[,] desk) //Метод записи одного хода в шахматной нотации
         {
+            if(WasThrereShortCastling(prevdesk, desk)) //Если была короткая рокировка
+            {
+                return "O-O";
+            }
+
+            if (WasThrereLongCastling(prevdesk, desk)) //Если была длинная рокировка
+            {
+                return "O-O-O";
+            }
+
             string Figure = null; //Обозначение фигуры
             string FirstPosition = null; //Первая позиция
             string SecondPosition = null; //Вторая позиция
+            string Separator = "-"; //Разделитель позиций
             //Перебор предыдущей и этой доски
             for(int i = 0; i<8; i++)
             {
@@ -1508,15 +1519,38 @@ namespace Chess
                         }
                         else  //Если на клетке предыдущей доски нет фигуры, или эта фигура - вражеская
                         {
+                            if (prevdesk[i, j] != 0)//Если на клетке предыдущей доски вражеская фигурап
+                            {
+                                Separator = ":";//Изменить разделитель позиций
+                            }
                             SecondPosition = $"{LineNotation[j+1]}{i+1}"; //Запись второй позиции. В начале столбец (буква из словаря), затем строка.
                         }
                     }
                 }
             }
+            
+            string Path = $"{Figure}{FirstPosition}{Separator}{SecondPosition}"; //Записать ход в последовательности: фигура, первая позиция, тире или двоеточие, вторая позиция.
 
-            string Path = $"{Figure}{FirstPosition}-{SecondPosition}"; //Записать ход в последовательности: фигура, первая позиция, вторая позиция.
-
+            
             return Path;//Вернуть ход
+        }
+
+        public bool WasThrereShortCastling(int[,] prevdesk, int[,] desk) //Была ли короткая рокировка
+        {
+            if ((prevdesk[0,4]%10==1 && desk[0, 6] % 10 == 1) || (prevdesk[7, 4] % 10 == 1 && desk[7, 6] % 10 == 1)) //Если король переместился с позиции e1 на g1, или с e8 на g8
+            {
+                return true; //вернуть true
+            }
+            return false; //вернуть false
+        }
+
+        public bool WasThrereLongCastling(int[,] prevdesk, int[,] desk) //Была ли длинная рокировка
+        {
+            if ((prevdesk[0, 4] % 10 == 1 && desk[0, 2] % 10 == 1) || (prevdesk[7, 4] % 10 == 1 && desk[7, 2] % 10 == 1)) //Если король переместился с позиции e1 на c1, или с e8 на c8
+            {
+                return true; //вернуть true
+            }
+            return false; //вернуть false
         }
 
 
