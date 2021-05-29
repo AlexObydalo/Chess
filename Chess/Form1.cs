@@ -166,6 +166,8 @@ namespace Chess
             //Кнопки "ход назад" и "ход вперед" не видны
             button3.Visible = false;
             button4.Visible = false;
+            
+            label5.Text = "-"; //Предыдущих ходов нет
         }
 
         // Прорисовка игрового поля
@@ -873,7 +875,7 @@ namespace Chess
             if(PositionNum==0) //Если вернулись к нулевой позиции
             {
                 button3.Visible = false; //Кнопка "ход назад" не видна
-                label5.Text = "-";
+                label5.Text = "-"; //Предыдущих ходов нет
             }
             else //Иначе
             {
