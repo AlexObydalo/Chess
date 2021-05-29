@@ -873,6 +873,11 @@ namespace Chess
             if(PositionNum==0) //Если вернулись к нулевой позиции
             {
                 button3.Visible = false; //Кнопка "ход назад" не видна
+                label5.Text = "-";
+            }
+            else //Иначе
+            {
+                label5.Text = WriteTurn(gamehistory[PositionNum - 1], gamehistory[PositionNum]); //Высветить ход, сделанный игроком
             }
             
             button4.Visible = true;//Кнопка "ход вперед" видна
@@ -922,6 +927,8 @@ namespace Chess
             {
                 MakeOurKingRed();//Сделать клетку короля красной
             }
+
+            label5.Text = WriteTurn(gamehistory[PositionNum - 1], gamehistory[PositionNum]); //Высветить ход, сделанный игроком
         }
 
         public void ShowChooseButtonsForPawns() //Показать кнопки превращений пешки
