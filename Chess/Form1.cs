@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -1557,6 +1558,31 @@ namespace Chess
             return false; //вернуть false
         }
 
+        public List<string> ConvertHistoryToStringList (List<int[,]> history)
+        {
+            List<string> Pathes = new List<string>(); //Список ходов
+            currPlayer = 2; //Играют черные
+            //Перебор списка досок
+            for(int i = 1; i<history.Count; i++)
+            {
+                Pathes.Add(WriteTurn(history[i - 1], history[i]));
+                SwitchPlayer();//Сменить игрока
+            }
+
+            return Pathes; //Вернуть список ходов
+        }
+
+        public void WriteHistorytoFile(List<string> history, string filename)
+        {
+            StreamWriter sw = new StreamWriter($"{filename}.txt"); //Создать файл с названием filename
+            //Перебор истории
+            for(int i = 0; i < history.Count; i++)
+            {
+                sw.WriteLine($"{i + 1}{history[i]}");
+            }
+            sw.Close();
+        }
+
 
         private void label1_Click(object sender, EventArgs e)
         {
@@ -1571,6 +1597,14 @@ namespace Chess
         private void label2_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void button5_Click(object sender, EventArgs e) //Если на кнопку сохранить нажали
+        {
+            if(textBox1.Text != null) //Если текстбокс не пустой
+            {
+                WriteHistorytoFile(ConvertHistoryToStringList(gamehistory), textBox1.Text); //Записать историю игры в файл
+            }
         }
     }
 
