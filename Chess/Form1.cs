@@ -1531,6 +1531,10 @@ namespace Chess
             
             string Path = $"{Figure}{FirstPosition}{Separator}{SecondPosition}"; //Записать ход в последовательности: фигура, первая позиция, тире или двоеточие, вторая позиция.
 
+            if(IsThrereCheck(desk)) //Если на этой доске шах
+            {
+                Path += "+"; //Добавить к записи хода значок "+"
+            }
             
             return Path;//Вернуть ход
         }
