@@ -747,9 +747,9 @@ namespace Chess
 
         public void ShowShortCastlingForKing(int IcurrFigure, int JcurrFigure)
         {
-            if (IsKingReadyForCastling(IcurrFigure, JcurrFigure) && IsCastleReadyForShortCastling(IcurrFigure, JcurrFigure)) //Если король и ладья на правильном месте для короткой рокировки
+            if (IsKingReadyForCastling(IcurrFigure, JcurrFigure) && IsCastleReadyForShortCastling(map)) //Если король и ладья на правильном месте для короткой рокировки
             {
-                if(IsTrerePlaceForShortCastling()) //Если место между королем и правой ладьей свободно
+                if(IsTrerePlaceForShortCastling(map)) //Если место между королем и правой ладьей свободно
                 {
                     if(!CanPathGiveUsCheck(IcurrFigure, JcurrFigure, IcurrFigure, JcurrFigure + 1) && !CanPathGiveUsCheck(IcurrFigure, JcurrFigure, IcurrFigure, JcurrFigure + 2)) //Если ход не принесет шаха и король не идет через битое поле.
                     {
@@ -762,9 +762,9 @@ namespace Chess
 
         public void ShowLongCastlingForKing(int IcurrFigure, int JcurrFigure)
         {
-            if (IsKingReadyForCastling(IcurrFigure, JcurrFigure) && IsCastleReadyForLongCastling(IcurrFigure, JcurrFigure)) //Если король и ладья на правильном месте для длинной рокировки
+            if (IsKingReadyForCastling(IcurrFigure, JcurrFigure) && IsCastleReadyForLongCastling(map)) //Если король и ладья на правильном месте для длинной рокировки
             {
-                if (IsTrerePlaceForLongCastling()) //Если место между королем и левой ладьей свободно
+                if (IsTrerePlaceForLongCastling(map)) //Если место между королем и левой ладьей свободно
                 {
                     if (!CanPathGiveUsCheck(IcurrFigure, JcurrFigure, IcurrFigure, JcurrFigure - 1) && !CanPathGiveUsCheck(IcurrFigure, JcurrFigure, IcurrFigure, JcurrFigure - 2)) //Если ход не принесет шаха и король не идет через битое поле.
                     {
@@ -784,36 +784,36 @@ namespace Chess
             return false;
         }
 
-        public bool IsCastleReadyForShortCastling(int IcurrFigure, int JcurrFigure)
+        public bool IsCastleReadyForShortCastling(int[,] desk)
         {
-            if ((map[0,7] == 15 && currPlayer == 1) || (map[7, 7] == 25 && currPlayer == 2))//Если ладья на правильном месте для короткой рокировки
+            if ((desk[0,7] == 15 && currPlayer == 1) || (desk[7, 7] == 25 && currPlayer == 2))//Если ладья на правильном месте для короткой рокировки
             {
                 return true;
             }
             return false;
         }
 
-        public bool IsCastleReadyForLongCastling(int IcurrFigure, int JcurrFigure)
+        public bool IsCastleReadyForLongCastling(int[,] desk)
         {
-            if ((map[0, 0] == 15 && currPlayer == 1) || (map[7, 0] == 25 && currPlayer == 2)) //Если ладья на правильном месте для длинной рокировки
+            if ((desk[0, 0] == 15 && currPlayer == 1) || (desk[7, 0] == 25 && currPlayer == 2)) //Если ладья на правильном месте для длинной рокировки
             {
                 return true;
             }
             return false;
         }
 
-        public bool IsTrerePlaceForShortCastling() 
+        public bool IsTrerePlaceForShortCastling(int[,] desk) 
         {
-            if ((currPlayer == 1 && map[0,5]==0 && map[0, 6] == 0) || (currPlayer == 2 && map[7, 5] == 0 && map[7, 6] == 0))//Есть ли место для короткой рокировки у игрока, который ходит
+            if ((currPlayer == 1 && desk[0,5]==0 && desk[0, 6] == 0) || (currPlayer == 2 && desk[7, 5] == 0 && desk[7, 6] == 0))//Есть ли место для короткой рокировки у игрока, который ходит
             {
                 return true;
             }
             return false;
         }
 
-        public bool IsTrerePlaceForLongCastling()
+        public bool IsTrerePlaceForLongCastling(int[,] desk)
         {
-            if ((currPlayer == 1 && map[0, 3] == 0 && map[0, 2] == 0 && map[0, 1] == 0) || (currPlayer == 2 && map[7, 3] == 0 && map[7, 2] == 0 && map[7, 1] == 0))//Есть ли место для длинной рокировки у игрока, который ходит
+            if ((currPlayer == 1 && desk[0, 3] == 0 && desk[0, 2] == 0 && desk[0, 1] == 0) || (currPlayer == 2 && desk[7, 3] == 0 && desk[7, 2] == 0 && desk[7, 1] == 0))//Есть ли место для длинной рокировки у игрока, который ходит
             {
                 return true;
             }
@@ -1399,62 +1399,62 @@ namespace Chess
             
             if (InsideBorder(IcurrFigure - 2, JcurrFigure + 1)) //Клетка в пределах доски
             {
-                if (desk[IcurrFigure-2, JcurrFigure + 1] / 10 == currPlayer) //если отакована наша фигура 
+                if (desk[IcurrFigure-2, JcurrFigure + 1] / 10 == currPlayer) //если атакована наша фигура 
                 {
-                    AttackedF.Add(desk[IcurrFigure - 2, JcurrFigure + 1]); //Записать отакованную фигуру
+                    AttackedF.Add(desk[IcurrFigure - 2, JcurrFigure + 1]); //Записать атакованную фигуру
                 }
             }
             if (InsideBorder(IcurrFigure - 2, JcurrFigure - 1)) //Клетка в пределах доски
             {
-                if (desk[IcurrFigure - 2, JcurrFigure - 1] / 10 == currPlayer) //если отакована наша фигура 
+                if (desk[IcurrFigure - 2, JcurrFigure - 1] / 10 == currPlayer) //если атакована наша фигура 
                 {
-                    AttackedF.Add(desk[IcurrFigure - 2, JcurrFigure - 1]); //Записать отакованную фигуру
+                    AttackedF.Add(desk[IcurrFigure - 2, JcurrFigure - 1]); //Записать атакованную фигуру
                 }
             }
             if (InsideBorder(IcurrFigure + 2, JcurrFigure + 1)) //Клетка в пределах доски
             {
                 if (desk[IcurrFigure + 2, JcurrFigure + 1] / 10 == currPlayer) //если отакована наша фигура 
                 {
-                    AttackedF.Add(desk[IcurrFigure + 2, JcurrFigure + 1]); //Записать отакованную фигуру
+                    AttackedF.Add(desk[IcurrFigure + 2, JcurrFigure + 1]); //Записать атакованную фигуру
                 }
             }
             if (InsideBorder(IcurrFigure + 2, JcurrFigure - 1)) //Клетка в пределах доски
             {
-                if (desk[IcurrFigure + 2, JcurrFigure - 1] / 10 == currPlayer) //если отакована наша фигура 
+                if (desk[IcurrFigure + 2, JcurrFigure - 1] / 10 == currPlayer) //если атакована наша фигура 
                 {
-                    AttackedF.Add(desk[IcurrFigure + 2, JcurrFigure - 1]); //Записать отакованную фигуру
+                    AttackedF.Add(desk[IcurrFigure + 2, JcurrFigure - 1]); //Записать атакованную фигуру
                 }
             }
             if (InsideBorder(IcurrFigure - 1, JcurrFigure + 2)) //Клетка в пределах доски
             {
-                if (desk[IcurrFigure - 1, JcurrFigure + 2] / 10 == currPlayer) //если отакована наша фигура 
+                if (desk[IcurrFigure - 1, JcurrFigure + 2] / 10 == currPlayer) //если атакована наша фигура 
                 {
-                    AttackedF.Add(desk[IcurrFigure - 1, JcurrFigure + 2]); //Записать отакованную фигуру
+                    AttackedF.Add(desk[IcurrFigure - 1, JcurrFigure + 2]); //Записать атакованную фигуру
                 }
             }
             if (InsideBorder(IcurrFigure + 1, JcurrFigure + 2)) //Клетка в пределах доски
             {
-                if (desk[IcurrFigure + 1, JcurrFigure + 2] / 10 == currPlayer) //если отакована наша фигура 
+                if (desk[IcurrFigure + 1, JcurrFigure + 2] / 10 == currPlayer) //если атакована наша фигура 
                 {
-                    AttackedF.Add(desk[IcurrFigure + 1, JcurrFigure + 2]); //Записать отакованную фигуру
+                    AttackedF.Add(desk[IcurrFigure + 1, JcurrFigure + 2]); //Записать атакованную фигуру
                 }
             }
             if (InsideBorder(IcurrFigure - 1, JcurrFigure - 2)) //Клетка в пределах доски
             {
-                if (desk[IcurrFigure - 1, JcurrFigure - 2] / 10 == currPlayer) //если отакована наша фигура 
+                if (desk[IcurrFigure - 1, JcurrFigure - 2] / 10 == currPlayer) //если атакована наша фигура 
                 {
-                    AttackedF.Add(desk[IcurrFigure - 1, JcurrFigure - 2]); //Записать отакованную фигуру
+                    AttackedF.Add(desk[IcurrFigure - 1, JcurrFigure - 2]); //Записать атакованную фигуру
                 }
             }
             if (InsideBorder(IcurrFigure + 1, JcurrFigure - 2)) //Клетка в пределах доски
             {
-                if (desk[IcurrFigure + 1, JcurrFigure - 2] / 10 == currPlayer) //если отакована наша фигура 
+                if (desk[IcurrFigure + 1, JcurrFigure - 2] / 10 == currPlayer) //если атакована наша фигура 
                 {
-                    AttackedF.Add(desk[IcurrFigure + 1, JcurrFigure - 2]); //Записать отакованную фигуру
+                    AttackedF.Add(desk[IcurrFigure + 1, JcurrFigure - 2]); //Записать атакованную фигуру
                 }
             }
 
-            return AttackedF; //Вернуть атакованые фигуры
+            return AttackedF; //Вернуть атакованные фигуры
         }
 
         public void MakeOurKingRed()//Сделать нашего короля красным
@@ -1543,7 +1543,16 @@ namespace Chess
 
             if(IsThrereCheck(desk)) //Если на этой доске шах
             {
-                Path += "+"; //Добавить к записи хода значок "+"
+                
+                if(CountYourPathes(desk)==0) //Если ходы невозможны
+                {
+                    Path += "x"; //Добавить к записи хода значок "x"
+                }
+                else //Если ходы возможны 
+                { 
+                    Path += "+"; //Добавить к записи хода значок "+"
+                }
+                
             }
             
             return Path;//Вернуть ход
@@ -1591,6 +1600,451 @@ namespace Chess
             }
             sw.Close();
         }
+
+        public int CountYourPathes(int[,] desk)//Метод счета ваших ходов
+        {
+            int AllPathesCount = 0; //Количество ходов
+            
+            //перебор клеток доски
+            for(int i = 0; i < 8; i++)
+            {
+                for (int j = 0; j < 8; j++)
+                {
+                    if(desk[i,j]/10 == currPlayer) //Если нам клетке наша фигура
+                    {
+                        switch(desk[i,j]%10)
+                        {
+                            case 6://Для пешек
+                                
+                                AllPathesCount += CountPawnPathes(desk, i, j); //Добавить к ходам ходы пешек
+                                
+                                break;
+                            
+                            case 5://Для ладей
+
+                                AllPathesCount += CountHorisotalVerticalPathes(desk, i, j); //Добавить к ходам ходы ладей
+
+                                break;
+
+                            case 4://Для коней
+
+                                AllPathesCount += CountHorsePathes(desk, i, j); //Добавить к ходам ходы лошадей
+
+                                break;
+
+                            case 3://Для офицеров
+
+                                AllPathesCount += CountDioganalPathes(desk, i, j); //Добавить к ходам ходы офицеров
+
+                                break;
+
+                            case 2://Для ферзей
+
+                                AllPathesCount += CountHorisotalVerticalPathes(desk, i, j); //Добавить к ходам ходы ладей
+                                AllPathesCount += CountDioganalPathes(desk, i, j); //Добавить к ходам ходы офицеров
+
+                                break;
+
+                            case 1://Для короля
+
+                                AllPathesCount += CountHorisotalVerticalPathes(desk, i, j, true); //Добавить к ходам ходы ладей с ограничением в один шаг
+                                AllPathesCount += CountDioganalPathes(desk, i, j, true); //Добавить к ходам ходы офицеров ограничением в один шаг
+                                AllPathesCount += CountCastlingPathes(desk, i, j); //Добавить ходы рокировки
+
+
+                                break;
+                        }
+                    }
+                }
+            }
+            return AllPathesCount; //Вернуть количество 
+        }
+
+        public int CountPawnPathes(int[,] desk, int IcurrFigure, int JcurrFigure)
+        {
+            int PathesCount = 0; //Количество ходов пешки
+            
+            int dir = currPlayer == 1 ? 1 : -1; //(если играют белые  dir = 1, иначе dir = -1) dir переменная по направлению пешки.
+
+            
+            if (InsideBorder(IcurrFigure + 1 * dir, JcurrFigure)) //Находиться ли прямой ход пешкой в пределах доски
+            {
+                if (desk[IcurrFigure + 1 * dir, JcurrFigure] == 0) //Если на клетке нет фигур
+                {
+                    if (!IsThrereCheck(MakePheudoPath(IcurrFigure, JcurrFigure, IcurrFigure + 1 * dir, JcurrFigure, desk)))//Если после хода наш король не под ударом
+                    {
+                        PathesCount++; //Увеличить количество ходов на один
+                    }
+
+                    if (InsideBorder(IcurrFigure + 2 * dir, JcurrFigure)) //Находиться ли прямой двойной ход пешкой в пределах доски
+                    {
+                        if ((IcurrFigure == 1 && currPlayer == 1 || IcurrFigure == 6 && currPlayer == 2) & map[IcurrFigure + 2 * dir, JcurrFigure] == 0) // Если есть возможность сделать два хода вперед
+                        {
+                            if (!IsThrereCheck(MakePheudoPath(IcurrFigure, JcurrFigure, IcurrFigure + 2 * dir, JcurrFigure, desk)))//Если после хода наш король не под ударом
+                            {
+                                PathesCount++; //Увеличить количество ходов на один
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (InsideBorder(IcurrFigure + 1 * dir, JcurrFigure + 1)) //Находиться ли правый атакующий (косой) ход пешкой в пределах доски
+            {
+                if (desk[IcurrFigure + 1 * dir, JcurrFigure + 1] != 0 && desk[IcurrFigure + 1 * dir, JcurrFigure + 1] / 10 != currPlayer) //Два условия: клетка не пуста, фигура на ней - вражеская
+                {
+                    if (!IsThrereCheck(MakePheudoPath(IcurrFigure, JcurrFigure, IcurrFigure + 1 * dir, JcurrFigure + 1, desk)))//Если после хода наш король не под ударом
+                    {
+                        PathesCount++; //Увеличить количество ходов на один
+                    }
+                }
+            }
+            if (InsideBorder(IcurrFigure + 1 * dir, JcurrFigure - 1)) ////Находиться ли левый атакующий (косой) ход пешкой в пределах доски
+            {
+                if (desk[IcurrFigure + 1 * dir, JcurrFigure - 1] != 0 && desk[IcurrFigure + 1 * dir, JcurrFigure - 1] / 10 != currPlayer) //Два условия: клетка не пуста, фигура на ней - вражеская
+                {
+                    if (!IsThrereCheck(MakePheudoPath(IcurrFigure, JcurrFigure, IcurrFigure + 1 * dir, JcurrFigure - 1, desk)))//Если после хода наш король не под ударом
+                    {
+                        PathesCount++; //Увеличить количество ходов на один
+                    }
+                }
+            }
+
+            return PathesCount; //Вернуть количество ходов
+        }
+
+        public int CountHorisotalVerticalPathes(int[,] desk, int IcurrFigure, int JcurrFigure, bool isOneStep = false) // Подсчет вертикально-горизонтальных ходов
+        {
+            int PathesCount = 0; //Количество ходов пешки
+
+            for (int i = IcurrFigure + 1; i < 8; i++) //Движение вверх
+            {
+                if (InsideBorder(i, JcurrFigure)) //Клетка в пределах доски
+                {
+                    if(desk[i, JcurrFigure] != 0)//Если на клетке есть фигура
+                    {
+                        if(desk[i, JcurrFigure] /10 != currPlayer)//Если фигура не наша
+                        {
+                            if(!IsThrereCheck(MakePheudoPath(IcurrFigure, JcurrFigure, i, JcurrFigure, desk))) //Если после хода нет шаха
+                            {
+                                PathesCount++; //Увеличить количество ходов на один
+                            }
+                        }
+                    }
+                    else //Если на клетке нет фигуры
+                    {
+                        if (!IsThrereCheck(MakePheudoPath(IcurrFigure, JcurrFigure, i, JcurrFigure, desk))) //Если после хода нет шаха
+                        {
+                            PathesCount++; //Увеличить количество ходов на один
+                        }
+                    }
+                }
+                if (isOneStep) //Если у фигуры только один ход
+                    break;
+            }
+            for (int i = IcurrFigure - 1; i >= 0; i--) //Движение вниз
+            {
+                if (InsideBorder(i, JcurrFigure)) //Клетка в пределах доски
+                {
+                    if (desk[i, JcurrFigure] != 0)//Если на клетке есть фигура
+                    {
+                        if (desk[i, JcurrFigure] / 10 != currPlayer)//Если фигура не наша
+                        {
+                            if (!IsThrereCheck(MakePheudoPath(IcurrFigure, JcurrFigure, i, JcurrFigure, desk))) //Если после хода нет шаха
+                            {
+                                PathesCount++; //Увеличить количество ходов на один
+                            }
+                        }
+                    }
+                    else //Если на клетке нет фигуры
+                    {
+                        if (!IsThrereCheck(MakePheudoPath(IcurrFigure, JcurrFigure, i, JcurrFigure, desk))) //Если после хода нет шаха
+                        {
+                            PathesCount++; //Увеличить количество ходов на один
+                        }
+                    }
+                }
+                if (isOneStep) //Если у фигуры только один ход
+                    break;
+            }
+            for (int j = JcurrFigure + 1; j < 8; j++) //Движение вправо
+            {
+                if (InsideBorder(IcurrFigure, j)) //Клетка в пределах доски
+                {
+                    if (desk[IcurrFigure, j] != 0)//Если на клетке есть фигура
+                    {
+                        if (desk[IcurrFigure, j] / 10 != currPlayer)//Если фигура не наша
+                        {
+                            if (!IsThrereCheck(MakePheudoPath(IcurrFigure, JcurrFigure, IcurrFigure, j, desk))) //Если после хода нет шаха
+                            {
+                                PathesCount++; //Увеличить количество ходов на один
+                            }
+                        }
+                    }
+                    else //Если на клетке нет фигуры
+                    {
+                        if (!IsThrereCheck(MakePheudoPath(IcurrFigure, IcurrFigure, IcurrFigure, j, desk))) //Если после хода нет шаха
+                        {
+                            PathesCount++; //Увеличить количество ходов на один
+                        }
+                    }
+                }
+                if (isOneStep) //Если у фигуры только один ход
+                    break;
+            }
+            for (int j = JcurrFigure - 1; j >= 0; j--) //Движение влево
+            {
+                if (InsideBorder(IcurrFigure, j)) //Клетка в пределах доски
+                {
+                    if (desk[IcurrFigure, j] != 0)//Если на клетке есть фигура
+                    {
+                        if (desk[IcurrFigure, j] / 10 != currPlayer)//Если фигура не наша
+                        {
+                            if (!IsThrereCheck(MakePheudoPath(IcurrFigure, JcurrFigure, IcurrFigure, j, desk))) //Если после хода нет шаха
+                            {
+                                PathesCount++; //Увеличить количество ходов на один
+                            }
+                        }
+                    }
+                    else //Если на клетке нет фигуры
+                    {
+                        if (!IsThrereCheck(MakePheudoPath(IcurrFigure, IcurrFigure, IcurrFigure, j, desk))) //Если после хода нет шаха
+                        {
+                            PathesCount++; //Увеличить количество ходов на один
+                        }
+                    }
+                }
+                if (isOneStep) //Если у фигуры только один ход
+                    break;
+            }
+            
+            return PathesCount; //Вернуть количество ходов
+        }
+
+        public int CountDioganalPathes(int[,] desk, int IcurrFigure, int JcurrFigure, bool isOneStep = false)
+        {
+            int PathesCount = 0; //Количество ходов пешки
+
+            int j = JcurrFigure + 1;
+            for (int i = IcurrFigure - 1; i >= 0; i--)
+            {
+                if (InsideBorder(i, j))
+                {
+                    if (desk[i, j] != 0)//Если на клетке есть фигура
+                    {
+                        if (desk[i, j] / 10 != currPlayer)//Если фигура не наша
+                        {
+                            if (!IsThrereCheck(MakePheudoPath(IcurrFigure, JcurrFigure, i, j, desk))) //Если после хода нет шаха
+                            {
+                                PathesCount++; //Увеличить количество ходов на один
+                            }
+                        }
+                    }
+                    else //Если на клетке нет фигуры
+                    {
+                        if (!IsThrereCheck(MakePheudoPath(IcurrFigure, JcurrFigure, i, j, desk))) //Если после хода нет шаха
+                        {
+                            PathesCount++; //Увеличить количество ходов на один
+                        }
+                    }
+                }
+                if (j < 7)
+                    j++;
+                else break;
+
+                if (isOneStep)
+                    break;
+            }
+
+            j = JcurrFigure - 1;
+            for (int i = IcurrFigure - 1; i >= 0; i--)
+            {
+                if (InsideBorder(i, j))
+                {
+                    if (desk[i, j] != 0)//Если на клетке есть фигура
+                    {
+                        if (desk[i, j] / 10 != currPlayer)//Если фигура не наша
+                        {
+                            if (!IsThrereCheck(MakePheudoPath(IcurrFigure, JcurrFigure, i, j, desk))) //Если после хода нет шаха
+                            {
+                                PathesCount++; //Увеличить количество ходов на один
+                            }
+                        }
+                    }
+                    else //Если на клетке нет фигуры
+                    {
+                        if (!IsThrereCheck(MakePheudoPath(IcurrFigure, JcurrFigure, i, j, desk))) //Если после хода нет шаха
+                        {
+                            PathesCount++; //Увеличить количество ходов на один
+                        }
+                    }
+                }
+                if (j > 0)
+                    j--;
+                else break;
+
+                if (isOneStep)
+                    break;
+            }
+
+            j = JcurrFigure - 1;
+            for (int i = IcurrFigure + 1; i < 8; i++)
+            {
+                if (InsideBorder(i, j))
+                {
+                    if (desk[i, j] != 0)//Если на клетке есть фигура
+                    {
+                        if (desk[i, j] / 10 != currPlayer)//Если фигура не наша
+                        {
+                            if (!IsThrereCheck(MakePheudoPath(IcurrFigure, JcurrFigure, i, j, desk))) //Если после хода нет шаха
+                            {
+                                PathesCount++; //Увеличить количество ходов на один
+                            }
+                        }
+                    }
+                    else //Если на клетке нет фигуры
+                    {
+                        if (!IsThrereCheck(MakePheudoPath(IcurrFigure, JcurrFigure, i, j, desk))) //Если после хода нет шаха
+                        {
+                            PathesCount++; //Увеличить количество ходов на один
+                        }
+                    }
+                }
+                if (j > 0)
+                    j--;
+                else break;
+
+                if (isOneStep)
+                    break;
+            }
+
+            j = JcurrFigure + 1;
+            for (int i = IcurrFigure + 1; i < 8; i++)
+            {
+                if (InsideBorder(i, j))
+                {
+                    if (desk[i, j] != 0)//Если на клетке есть фигура
+                    {
+                        if (desk[i, j] / 10 != currPlayer)//Если фигура не наша
+                        {
+                            if (!IsThrereCheck(MakePheudoPath(IcurrFigure, JcurrFigure, i, j, desk))) //Если после хода нет шаха
+                            {
+                                PathesCount++; //Увеличить количество ходов на один
+                            }
+                        }
+                    }
+                    else //Если на клетке нет фигуры
+                    {
+                        if (!IsThrereCheck(MakePheudoPath(IcurrFigure, JcurrFigure, i, j, desk))) //Если после хода нет шаха
+                        {
+                            PathesCount++; //Увеличить количество ходов на один
+                        }
+                    }
+                }
+                if (j < 7)
+                    j++;
+                else break;
+
+                if (isOneStep)
+                    break;
+            }
+            return PathesCount; // Вернуть количество ходов
+        }
+
+        public int CountHorsePathes(int[,] desk, int IcurrFigure, int JcurrFigure) //Посчитать ходы коня
+        {
+            int PathesCount = 0; //Количество ходов пешки
+
+            if (InsideBorder(IcurrFigure - 2, JcurrFigure + 1)) //Клетка в пределах доски
+            {
+                if (desk[IcurrFigure - 2, JcurrFigure + 1] / 10 != currPlayer && !IsThrereCheck(MakePheudoPath(IcurrFigure, JcurrFigure, IcurrFigure - 2, JcurrFigure + 1, desk))) //если на клетке нет нашей фигуры, и ход не дает нам шах 
+                {
+                    PathesCount++; //Увеличить количество ходов на один
+                }
+            }
+            if (InsideBorder(IcurrFigure - 2, JcurrFigure - 1)) //Клетка в пределах доски
+            {
+                if (desk[IcurrFigure - 2, JcurrFigure - 1] / 10 != currPlayer && !IsThrereCheck(MakePheudoPath(IcurrFigure, JcurrFigure, IcurrFigure - 2, JcurrFigure - 1, desk))) //если на клетке нет нашей фигуры, и ход не дает нам шах 
+                {
+                    PathesCount++; //Увеличить количество ходов на один
+                }
+            }
+            if (InsideBorder(IcurrFigure + 2, JcurrFigure + 1)) //Клетка в пределах доски
+            {
+                if (desk[IcurrFigure + 2, JcurrFigure + 1] / 10 != currPlayer && !IsThrereCheck(MakePheudoPath(IcurrFigure, JcurrFigure, IcurrFigure + 2, JcurrFigure + 1, desk))) //если на клетке нет нашей фигуры, и ход не дает нам шах
+                {
+                    PathesCount++; //Увеличить количество ходов на один
+                }
+            }
+            if (InsideBorder(IcurrFigure + 2, JcurrFigure - 1)) //Клетка в пределах доски
+            {
+                if (desk[IcurrFigure + 2, JcurrFigure - 1] / 10 != currPlayer && !IsThrereCheck(MakePheudoPath(IcurrFigure, JcurrFigure, IcurrFigure + 2, JcurrFigure - 1, desk))) //если на клетке нет нашей фигуры, и ход не дает нам шах
+                {
+                    PathesCount++; //Увеличить количество ходов на один
+                }
+            }
+            if (InsideBorder(IcurrFigure - 1, JcurrFigure + 2)) //Клетка в пределах доски
+            {
+                if (desk[IcurrFigure - 1, JcurrFigure + 2] / 10 != currPlayer && !IsThrereCheck(MakePheudoPath(IcurrFigure, JcurrFigure, IcurrFigure - 1, JcurrFigure + 2, desk))) //если на клетке нет нашей фигуры, и ход не дает нам шах
+                {
+                    PathesCount++; //Увеличить количество ходов на один
+                }
+            }
+            if (InsideBorder(IcurrFigure + 1, JcurrFigure + 2)) //Клетка в пределах доски
+            {
+                if (desk[IcurrFigure + 1, JcurrFigure + 2] / 10 != currPlayer && !IsThrereCheck(MakePheudoPath(IcurrFigure, JcurrFigure, IcurrFigure + 1, JcurrFigure + 2, desk))) //если на клетке нет нашей фигуры, и ход не дает нам шах 
+                {
+                    PathesCount++; //Увеличить количество ходов на один
+                }
+            }
+            if (InsideBorder(IcurrFigure - 1, JcurrFigure - 2)) //Клетка в пределах доски
+            {
+                if (desk[IcurrFigure - 1, JcurrFigure - 2] / 10 != currPlayer && !IsThrereCheck(MakePheudoPath(IcurrFigure, JcurrFigure, IcurrFigure - 1, JcurrFigure - 2, desk))) //если на клетке нет нашей фигуры, и ход не дает нам шах 
+                {
+                    PathesCount++; //Увеличить количество ходов на один
+                }
+            }
+            if (InsideBorder(IcurrFigure + 1, JcurrFigure - 2)) //Клетка в пределах доски
+            {
+                if (desk[IcurrFigure + 1, JcurrFigure - 2] / 10 != currPlayer && !IsThrereCheck(MakePheudoPath(IcurrFigure, JcurrFigure, IcurrFigure + 1, JcurrFigure - 2, desk))) //если на клетке нет нашей фигуры, и ход не дает нам шах 
+                {
+                    PathesCount++; //Увеличить количество ходов на один
+                }
+            }
+
+            return PathesCount; // Вернуть количество ходов
+        }
+
+        public int CountCastlingPathes(int[,] desk, int IcurrFigure, int JcurrFigure)//Посчитать рокировочные ходы
+        {
+            int PathesCount = 0; //Количество ходов
+            
+            if (IsKingReadyForCastling(IcurrFigure, JcurrFigure) && IsCastleReadyForShortCastling(desk)) //Если король и ладья на правильном месте для короткой рокировки
+            {
+                if (IsTrerePlaceForShortCastling(desk)) //Если место между королем и правой ладьей свободно
+                {
+                    if (!IsThrereCheck(MakePheudoPath(IcurrFigure, JcurrFigure, IcurrFigure, JcurrFigure + 1, desk)) && !IsThrereCheck(MakePheudoPath(IcurrFigure, JcurrFigure, IcurrFigure, JcurrFigure + 2, desk))) //Если ход не принесет шаха и король не идет через битое поле.
+                    {
+                        PathesCount++; //Добавить ход
+                    }
+                }
+            }
+
+            if (IsKingReadyForCastling(IcurrFigure, JcurrFigure) && IsCastleReadyForLongCastling(desk)) //Если король и ладья на правильном месте для длинной рокировки
+            {
+                if (IsTrerePlaceForLongCastling(desk)) //Если место между королем и левой ладьей свободно
+                {
+                    if (!IsThrereCheck(MakePheudoPath(IcurrFigure, JcurrFigure, IcurrFigure, JcurrFigure - 1, desk)) && !IsThrereCheck(MakePheudoPath(IcurrFigure, JcurrFigure, IcurrFigure, JcurrFigure - 2, desk))) //Если ход не принесет шаха и король не идет через битое поле.
+                    {
+                        PathesCount++; //Добавить ход
+                    }
+                }
+            }
+
+            return PathesCount; //Вернуть количество ходов
+        }
+
+
 
 
         private void label1_Click(object sender, EventArgs e)
