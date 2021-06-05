@@ -10,10 +10,13 @@ namespace Chess
     {
         public GamePosition GamePosition { get; set; } // Корневая позиция
 
-        //Запись дерева по игровой позиции
-        public PathesTree(GamePosition gamePosition)
+        public int TurnNum { get; set; } //Номер хода
+        
+        //Запись дерева по игровой позиции и номеру хода
+        public PathesTree(GamePosition gamePosition, int turnNum)
         {
             GamePosition = gamePosition;
+            TurnNum = turnNum;
         }
 
         public List<PathesTree> PathesTrees { get; set; } //Массив ветвей
@@ -27,7 +30,7 @@ namespace Chess
         //Добавление позиции в массив ветвей
         public void Add(GamePosition gamePosition)
         {
-            PathesTrees.Add(new PathesTree(gamePosition));
+            PathesTrees.Add(new PathesTree(gamePosition, TurnNum+1));
         }
 
         //Возвращение дерева из массива ветвей
