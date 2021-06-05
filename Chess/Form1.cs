@@ -1678,7 +1678,7 @@ namespace Chess
 
                     if (InsideBorder(IcurrFigure + 2 * dir, JcurrFigure)) //Находиться ли прямой двойной ход пешкой в пределах доски
                     {
-                        if ((IcurrFigure == 1 && currPlayer == 1 || IcurrFigure == 6 && currPlayer == 2) & map[IcurrFigure + 2 * dir, JcurrFigure] == 0) // Если есть возможность сделать два хода вперед
+                        if ((IcurrFigure == 1 && currPlayer == 1 || IcurrFigure == 6 && currPlayer == 2) & desk[IcurrFigure + 2 * dir, JcurrFigure] == 0) // Если есть возможность сделать два хода вперед
                         {
                             if (!IsThrereCheck(MakePheudoPath(IcurrFigure, JcurrFigure, IcurrFigure + 2 * dir, JcurrFigure, desk)))//Если после хода наш король не под ударом
                             {
