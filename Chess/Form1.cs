@@ -2077,6 +2077,516 @@ namespace Chess
             return PathesCount; //Вернуть количество ходов
         }
 
+        //Дать список ходов из любой доски
+        public List<Path> GivePathes(int[,] desk)
+        {
+            List<Path> AllPathes = new List<Path>(); //Список всех ходов
+
+            //Перебор массива 
+            for(int i = 0; i < 8; i++)
+            {
+                for (int j = 0; j < 8; j++)
+                {
+                    if(desk[i,j]/10 == currPlayer)//Если на клетке наша фигура
+                    {
+                        switch(desk[i, j] % 10)
+                        {
+                            case 6://Для пешек
+
+                                List<Path> PawnPathes = GivePawnPathes(desk, i, j); //Список ходов пешки
+
+                                //Перебрать ходы фигуры 
+                                foreach(Path p in PawnPathes)
+                                {
+                                    AllPathes.Add(p); //Добавить ход фигуры в список всех ходов
+                                }
+
+                                break;
+
+                            case 5://Для ладей
+
+                                List<Path> CastlePathes = GiveHorizontalVericalPathes(desk, i, j); //Список ходов ладьи
+                                
+                                //Перебрать ходы фигуры 
+                                foreach (Path p in CastlePathes)
+                                {
+                                    AllPathes.Add(p); //Добавить ход фигуры в список всех ходов
+                                }
+
+                                break;
+
+                            case 4://Для коней
+
+                                List<Path> HorsePathes = GiveHorsePathes(desk, i, j); //Список ходов коня
+
+                                //Перебрать ходы фигуры 
+                                foreach (Path p in HorsePathes)
+                                {
+                                    AllPathes.Add(p); //Добавить ход фигуры в список всех ходов
+                                }
+
+                                break;
+
+                            case 3://Для офицеров
+
+                                List<Path> OfficerPathes = GiveDioganalPathes(desk, i, j); //Список ходов офицера
+
+                                //Перебрать ходы фигуры 
+                                foreach (Path p in OfficerPathes)
+                                {
+                                    AllPathes.Add(p); //Добавить ход фигуры в список всех ходов
+                                }
+
+                                break;
+
+                            case 2://Для ферзей
+
+                                List<Path> DioganalPathes = GiveDioganalPathes(desk, i, j); //Список ходов офицера
+
+                                //Перебрать ходы фигуры 
+                                foreach (Path p in DioganalPathes)
+                                {
+                                    AllPathes.Add(p); //Добавить ход фигуры в список всех ходов
+                                }
+
+
+                                List<Path> HVPathes = GiveDioganalPathes(desk, i, j); //Список ходов ладьи
+
+                                //Перебрать ходы фигуры 
+                                foreach (Path p in HVPathes)
+                                {
+                                    AllPathes.Add(p); //Добавить ход фигуры в список всех ходов
+                                }
+
+                                break;
+
+                            case 1://Для короля
+
+                                List<Path> OneStepDioganalPathes = GiveDioganalPathes(desk, i, j, true); //Список диагональных ходов короля
+
+                                //Перебрать ходы фигуры 
+                                foreach (Path p in OneStepDioganalPathes)
+                                {
+                                    AllPathes.Add(p); //Добавить ход фигуры в список всех ходов
+                                }
+
+
+                                List<Path> OneStepCastlePathes = GiveHorizontalVericalPathes(desk, i, j, true); ///Список вертикально-горизонтальных ходов короля
+
+                                //Перебрать ходы фигуры 
+                                foreach (Path p in OneStepCastlePathes)
+                                {
+                                    AllPathes.Add(p); //Добавить ход фигуры в список всех ходов
+                                }
+
+                                List<Path> CastlngPathes = GiveCastlingPathes(desk, i, j); ///Список рокировочных ходов короля
+
+                                //Перебрать ходы фигуры 
+                                foreach (Path p in CastlngPathes)
+                                {
+                                    AllPathes.Add(p); //Добавить ход фигуры в список всех ходов
+                                }
+
+                                break;
+                        }
+                    }
+                }
+            }
+
+            return AllPathes; //Возвращаем все ходы
+        }
+
+        //Дать все ходы пешки
+        public List<Path> GivePawnPathes(int[,] desk, int IcurrFigure, int JcurrFigure)
+        {
+            List<Path> Pathes = new List<Path>(); //Список ходов
+
+            int dir = currPlayer == 1 ? 1 : -1; //(если играют белые  dir = 1, иначе dir = -1) dir переменная по направлению пешки.
+
+
+            if (InsideBorder(IcurrFigure + 1 * dir, JcurrFigure)) //Находиться ли прямой ход пешкой в пределах доски
+            {
+                if (desk[IcurrFigure + 1 * dir, JcurrFigure] == 0) //Если на клетке нет фигур
+                {
+                    if (!IsThrereCheck(MakePheudoPath(IcurrFigure, JcurrFigure, IcurrFigure + 1 * dir, JcurrFigure, desk)))//Если после хода наш король не под ударом
+                    {
+                        Pathes.Add(new Path(IcurrFigure, JcurrFigure, IcurrFigure + 1 * dir, JcurrFigure)); //Добавить этот ход
+                    }
+
+                    if (InsideBorder(IcurrFigure + 2 * dir, JcurrFigure)) //Находиться ли прямой двойной ход пешкой в пределах доски
+                    {
+                        if ((IcurrFigure == 1 && currPlayer == 1 || IcurrFigure == 6 && currPlayer == 2) & desk[IcurrFigure + 2 * dir, JcurrFigure] == 0) // Если есть возможность сделать два хода вперед
+                        {
+                            if (!IsThrereCheck(MakePheudoPath(IcurrFigure, JcurrFigure, IcurrFigure + 2 * dir, JcurrFigure, desk)))//Если после хода наш король не под ударом
+                            {
+                                Pathes.Add(new Path(IcurrFigure, JcurrFigure, IcurrFigure + 2 * dir, JcurrFigure)); //Добавить этот ход
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (InsideBorder(IcurrFigure + 1 * dir, JcurrFigure + 1)) //Находиться ли правый атакующий (косой) ход пешкой в пределах доски
+            {
+                if (desk[IcurrFigure + 1 * dir, JcurrFigure + 1] != 0 && desk[IcurrFigure + 1 * dir, JcurrFigure + 1] / 10 != currPlayer) //Два условия: клетка не пуста, фигура на ней - вражеская
+                {
+                    if (!IsThrereCheck(MakePheudoPath(IcurrFigure, JcurrFigure, IcurrFigure + 1 * dir, JcurrFigure + 1, desk)))//Если после хода наш король не под ударом
+                    {
+                        Pathes.Add(new Path(IcurrFigure, JcurrFigure, IcurrFigure + 1 * dir, JcurrFigure + 1)); //Добавить этот ход
+                    }
+                }
+            }
+            if (InsideBorder(IcurrFigure + 1 * dir, JcurrFigure - 1)) ////Находиться ли левый атакующий (косой) ход пешкой в пределах доски
+            {
+                if (desk[IcurrFigure + 1 * dir, JcurrFigure - 1] != 0 && desk[IcurrFigure + 1 * dir, JcurrFigure - 1] / 10 != currPlayer) //Два условия: клетка не пуста, фигура на ней - вражеская
+                {
+                    if (!IsThrereCheck(MakePheudoPath(IcurrFigure, JcurrFigure, IcurrFigure + 1 * dir, JcurrFigure - 1, desk)))//Если после хода наш король не под ударом
+                    {
+                        Pathes.Add(new Path(IcurrFigure, JcurrFigure, IcurrFigure + 1 * dir, JcurrFigure - 1)); //Добавить этот ход
+                    }
+                }
+            }
+
+            return Pathes; //Вернуть список ходов
+        }
+
+        //Дать все вертикально-горизонтальные ходы
+        public List<Path> GiveHorizontalVericalPathes(int[,] desk, int IcurrFigure, int JcurrFigure, bool isOneStep = false)
+        {
+            List<Path> Pathes = new List<Path>(); //Список ходов
+
+            for (int i = IcurrFigure + 1; i < 8; i++) //Движение вверх
+            {
+                if (InsideBorder(i, JcurrFigure)) //Клетка в пределах доски
+                {
+                    if (desk[i, JcurrFigure] != 0)//Если на клетке есть фигура
+                    {
+                        if (desk[i, JcurrFigure] / 10 != currPlayer)//Если фигура не наша
+                        {
+                            if (!IsThrereCheck(MakePheudoPath(IcurrFigure, JcurrFigure, i, JcurrFigure, desk))) //Если после хода нет шаха
+                            {
+                                Pathes.Add(new Path(IcurrFigure, JcurrFigure, i, JcurrFigure)); //Добавить этот ход
+                            }
+                        }
+                    }
+                    else //Если на клетке нет фигуры
+                    {
+                        if (!IsThrereCheck(MakePheudoPath(IcurrFigure, JcurrFigure, i, JcurrFigure, desk))) //Если после хода нет шаха
+                        {
+                            Pathes.Add(new Path(IcurrFigure, JcurrFigure, i, JcurrFigure)); //Добавить этот ход
+                        }
+                    }
+                }
+                if (isOneStep) //Если у фигуры только один ход
+                    break;
+            }
+            for (int i = IcurrFigure - 1; i >= 0; i--) //Движение вниз
+            {
+                if (InsideBorder(i, JcurrFigure)) //Клетка в пределах доски
+                {
+                    if (desk[i, JcurrFigure] != 0)//Если на клетке есть фигура
+                    {
+                        if (desk[i, JcurrFigure] / 10 != currPlayer)//Если фигура не наша
+                        {
+                            if (!IsThrereCheck(MakePheudoPath(IcurrFigure, JcurrFigure, i, JcurrFigure, desk))) //Если после хода нет шаха
+                            {
+                                Pathes.Add(new Path(IcurrFigure, JcurrFigure, i, JcurrFigure)); //Добавить этот ход
+                            }
+                        }
+                    }
+                    else //Если на клетке нет фигуры
+                    {
+                        if (!IsThrereCheck(MakePheudoPath(IcurrFigure, JcurrFigure, i, JcurrFigure, desk))) //Если после хода нет шаха
+                        {
+                            Pathes.Add(new Path(IcurrFigure, JcurrFigure, i, JcurrFigure)); //Добавить этот ход
+                        }
+                    }
+                }
+                if (isOneStep) //Если у фигуры только один ход
+                    break;
+            }
+            for (int j = JcurrFigure + 1; j < 8; j++) //Движение вправо
+            {
+                if (InsideBorder(IcurrFigure, j)) //Клетка в пределах доски
+                {
+                    if (desk[IcurrFigure, j] != 0)//Если на клетке есть фигура
+                    {
+                        if (desk[IcurrFigure, j] / 10 != currPlayer)//Если фигура не наша
+                        {
+                            if (!IsThrereCheck(MakePheudoPath(IcurrFigure, JcurrFigure, IcurrFigure, j, desk))) //Если после хода нет шаха
+                            {
+                                Pathes.Add(new Path(IcurrFigure, JcurrFigure, IcurrFigure, j)); //Добавить этот ход
+                            }
+                        }
+                    }
+                    else //Если на клетке нет фигуры
+                    {
+                        if (!IsThrereCheck(MakePheudoPath(IcurrFigure, IcurrFigure, IcurrFigure, j, desk))) //Если после хода нет шаха
+                        {
+                            Pathes.Add(new Path(IcurrFigure, JcurrFigure, IcurrFigure, j)); //Добавить этот ход
+                        }
+                    }
+                }
+                if (isOneStep) //Если у фигуры только один ход
+                    break;
+            }
+            for (int j = JcurrFigure - 1; j >= 0; j--) //Движение влево
+            {
+                if (InsideBorder(IcurrFigure, j)) //Клетка в пределах доски
+                {
+                    if (desk[IcurrFigure, j] != 0)//Если на клетке есть фигура
+                    {
+                        if (desk[IcurrFigure, j] / 10 != currPlayer)//Если фигура не наша
+                        {
+                            if (!IsThrereCheck(MakePheudoPath(IcurrFigure, JcurrFigure, IcurrFigure, j, desk))) //Если после хода нет шаха
+                            {
+                                Pathes.Add(new Path(IcurrFigure, JcurrFigure, IcurrFigure, j)); //Добавить этот ход
+                            }
+                        }
+                    }
+                    else //Если на клетке нет фигуры
+                    {
+                        if (!IsThrereCheck(MakePheudoPath(IcurrFigure, IcurrFigure, IcurrFigure, j, desk))) //Если после хода нет шаха
+                        {
+                            Pathes.Add(new Path(IcurrFigure, JcurrFigure, IcurrFigure, j)); //Добавить этот ход
+                        }
+                    }
+                }
+                if (isOneStep) //Если у фигуры только один ход
+                    break;
+            }
+
+            return Pathes; //Вернуть список ходов
+        }
+
+        //Дать все диагональные ходы
+        public List<Path> GiveDioganalPathes(int[,] desk, int IcurrFigure, int JcurrFigure, bool isOneStep = false)
+        {
+            List<Path> Pathes = new List<Path>(); //Список ходов
+
+            int j = JcurrFigure + 1;
+            for (int i = IcurrFigure - 1; i >= 0; i--)
+            {
+                if (InsideBorder(i, j))
+                {
+                    if (desk[i, j] != 0)//Если на клетке есть фигура
+                    {
+                        if (desk[i, j] / 10 != currPlayer)//Если фигура не наша
+                        {
+                            if (!IsThrereCheck(MakePheudoPath(IcurrFigure, JcurrFigure, i, j, desk))) //Если после хода нет шаха
+                            {
+                                Pathes.Add(new Path(IcurrFigure, JcurrFigure, i, j)); //Добавить этот ход
+                            }
+                        }
+                    }
+                    else //Если на клетке нет фигуры
+                    {
+                        if (!IsThrereCheck(MakePheudoPath(IcurrFigure, JcurrFigure, i, j, desk))) //Если после хода нет шаха
+                        {
+                            Pathes.Add(new Path(IcurrFigure, JcurrFigure, i, j)); //Добавить этот ход
+                        }
+                    }
+                }
+                if (j < 7)
+                    j++;
+                else break;
+
+                if (isOneStep)
+                    break;
+            }
+
+            j = JcurrFigure - 1;
+            for (int i = IcurrFigure - 1; i >= 0; i--)
+            {
+                if (InsideBorder(i, j))
+                {
+                    if (desk[i, j] != 0)//Если на клетке есть фигура
+                    {
+                        if (desk[i, j] / 10 != currPlayer)//Если фигура не наша
+                        {
+                            if (!IsThrereCheck(MakePheudoPath(IcurrFigure, JcurrFigure, i, j, desk))) //Если после хода нет шаха
+                            {
+                                Pathes.Add(new Path(IcurrFigure, JcurrFigure, i, j)); //Добавить этот ход
+                            }
+                        }
+                    }
+                    else //Если на клетке нет фигуры
+                    {
+                        if (!IsThrereCheck(MakePheudoPath(IcurrFigure, JcurrFigure, i, j, desk))) //Если после хода нет шаха
+                        {
+                            Pathes.Add(new Path(IcurrFigure, JcurrFigure, i, j)); //Добавить этот ход
+                        }
+                    }
+                }
+                if (j > 0)
+                    j--;
+                else break;
+
+                if (isOneStep)
+                    break;
+            }
+
+            j = JcurrFigure - 1;
+            for (int i = IcurrFigure + 1; i < 8; i++)
+            {
+                if (InsideBorder(i, j))
+                {
+                    if (desk[i, j] != 0)//Если на клетке есть фигура
+                    {
+                        if (desk[i, j] / 10 != currPlayer)//Если фигура не наша
+                        {
+                            if (!IsThrereCheck(MakePheudoPath(IcurrFigure, JcurrFigure, i, j, desk))) //Если после хода нет шаха
+                            {
+                                Pathes.Add(new Path(IcurrFigure, JcurrFigure, i, j)); //Добавить этот ход
+                            }
+                        }
+                    }
+                    else //Если на клетке нет фигуры
+                    {
+                        if (!IsThrereCheck(MakePheudoPath(IcurrFigure, JcurrFigure, i, j, desk))) //Если после хода нет шаха
+                        {
+                            Pathes.Add(new Path(IcurrFigure, JcurrFigure, i, j)); //Добавить этот ход
+                        }
+                    }
+                }
+                if (j > 0)
+                    j--;
+                else break;
+
+                if (isOneStep)
+                    break;
+            }
+
+            j = JcurrFigure + 1;
+            for (int i = IcurrFigure + 1; i < 8; i++)
+            {
+                if (InsideBorder(i, j))
+                {
+                    if (desk[i, j] != 0)//Если на клетке есть фигура
+                    {
+                        if (desk[i, j] / 10 != currPlayer)//Если фигура не наша
+                        {
+                            if (!IsThrereCheck(MakePheudoPath(IcurrFigure, JcurrFigure, i, j, desk))) //Если после хода нет шаха
+                            {
+                                Pathes.Add(new Path(IcurrFigure, JcurrFigure, i, j)); //Добавить этот ход
+                            }
+                        }
+                    }
+                    else //Если на клетке нет фигуры
+                    {
+                        if (!IsThrereCheck(MakePheudoPath(IcurrFigure, JcurrFigure, i, j, desk))) //Если после хода нет шаха
+                        {
+                            Pathes.Add(new Path(IcurrFigure, JcurrFigure, i, j)); //Добавить этот ход
+                        }
+                    }
+                }
+                if (j < 7)
+                    j++;
+                else break;
+
+                if (isOneStep)
+                    break;
+            }
+
+            return Pathes; //Вернуть список ходов
+        }
+
+        //Дать все ходы конем
+        public List<Path> GiveHorsePathes(int[,] desk, int IcurrFigure, int JcurrFigure)
+        {
+            List<Path> Pathes = new List<Path>(); //Список ходов
+
+            if (InsideBorder(IcurrFigure - 2, JcurrFigure + 1)) //Клетка в пределах доски
+            {
+                if (desk[IcurrFigure - 2, JcurrFigure + 1] / 10 != currPlayer && !IsThrereCheck(MakePheudoPath(IcurrFigure, JcurrFigure, IcurrFigure - 2, JcurrFigure + 1, desk))) //если на клетке нет нашей фигуры, и ход не дает нам шах 
+                {
+                    Pathes.Add(new Path(IcurrFigure, JcurrFigure, IcurrFigure - 2, JcurrFigure + 1)); //Добавить этот ход
+                }
+            }
+            if (InsideBorder(IcurrFigure - 2, JcurrFigure - 1)) //Клетка в пределах доски
+            {
+                if (desk[IcurrFigure - 2, JcurrFigure - 1] / 10 != currPlayer && !IsThrereCheck(MakePheudoPath(IcurrFigure, JcurrFigure, IcurrFigure - 2, JcurrFigure - 1, desk))) //если на клетке нет нашей фигуры, и ход не дает нам шах 
+                {
+                    Pathes.Add(new Path(IcurrFigure, JcurrFigure, IcurrFigure - 2, JcurrFigure - 1)); //Добавить этот ход
+                }
+            }
+            if (InsideBorder(IcurrFigure + 2, JcurrFigure + 1)) //Клетка в пределах доски
+            {
+                if (desk[IcurrFigure + 2, JcurrFigure + 1] / 10 != currPlayer && !IsThrereCheck(MakePheudoPath(IcurrFigure, JcurrFigure, IcurrFigure + 2, JcurrFigure + 1, desk))) //если на клетке нет нашей фигуры, и ход не дает нам шах
+                {
+                    Pathes.Add(new Path(IcurrFigure, JcurrFigure, IcurrFigure + 2, JcurrFigure + 1)); //Добавить этот ход
+                }
+            }
+            if (InsideBorder(IcurrFigure + 2, JcurrFigure - 1)) //Клетка в пределах доски
+            {
+                if (desk[IcurrFigure + 2, JcurrFigure - 1] / 10 != currPlayer && !IsThrereCheck(MakePheudoPath(IcurrFigure, JcurrFigure, IcurrFigure + 2, JcurrFigure - 1, desk))) //если на клетке нет нашей фигуры, и ход не дает нам шах
+                {
+                    Pathes.Add(new Path(IcurrFigure, JcurrFigure, IcurrFigure + 2, JcurrFigure - 1)); //Добавить этот ход
+                }
+            }
+            if (InsideBorder(IcurrFigure - 1, JcurrFigure + 2)) //Клетка в пределах доски
+            {
+                if (desk[IcurrFigure - 1, JcurrFigure + 2] / 10 != currPlayer && !IsThrereCheck(MakePheudoPath(IcurrFigure, JcurrFigure, IcurrFigure - 1, JcurrFigure + 2, desk))) //если на клетке нет нашей фигуры, и ход не дает нам шах
+                {
+                    Pathes.Add(new Path(IcurrFigure, JcurrFigure, IcurrFigure - 1, JcurrFigure + 2)); //Добавить этот ход
+                }
+            }
+            if (InsideBorder(IcurrFigure + 1, JcurrFigure + 2)) //Клетка в пределах доски
+            {
+                if (desk[IcurrFigure + 1, JcurrFigure + 2] / 10 != currPlayer && !IsThrereCheck(MakePheudoPath(IcurrFigure, JcurrFigure, IcurrFigure + 1, JcurrFigure + 2, desk))) //если на клетке нет нашей фигуры, и ход не дает нам шах 
+                {
+                    Pathes.Add(new Path(IcurrFigure, JcurrFigure, IcurrFigure + 1, JcurrFigure + 2)); //Добавить этот ход
+                }
+            }
+            if (InsideBorder(IcurrFigure - 1, JcurrFigure - 2)) //Клетка в пределах доски
+            {
+                if (desk[IcurrFigure - 1, JcurrFigure - 2] / 10 != currPlayer && !IsThrereCheck(MakePheudoPath(IcurrFigure, JcurrFigure, IcurrFigure - 1, JcurrFigure - 2, desk))) //если на клетке нет нашей фигуры, и ход не дает нам шах 
+                {
+                    Pathes.Add(new Path(IcurrFigure, JcurrFigure, IcurrFigure - 1, JcurrFigure - 2)); //Добавить этот ход
+                }
+            }
+            if (InsideBorder(IcurrFigure + 1, JcurrFigure - 2)) //Клетка в пределах доски
+            {
+                if (desk[IcurrFigure + 1, JcurrFigure - 2] / 10 != currPlayer && !IsThrereCheck(MakePheudoPath(IcurrFigure, JcurrFigure, IcurrFigure + 1, JcurrFigure - 2, desk))) //если на клетке нет нашей фигуры, и ход не дает нам шах 
+                {
+                    Pathes.Add(new Path(IcurrFigure, JcurrFigure, IcurrFigure + 1, JcurrFigure - 2)); //Добавить этот ход
+                }
+            }
+
+            return Pathes; //Вернуть список ходов
+        }
+
+
+        //Дать все рокировочные ходы
+        public List<Path> GiveCastlingPathes(int[,] desk, int IcurrFigure, int JcurrFigure)
+        {
+            List<Path> Pathes = new List<Path>(); //Список ходов
+
+            if (IsKingReadyForCastling(IcurrFigure, JcurrFigure) && IsCastleReadyForShortCastling(desk)) //Если король и ладья на правильном месте для короткой рокировки
+            {
+                if (IsTrerePlaceForShortCastling(desk)) //Если место между королем и правой ладьей свободно
+                {
+                    if (!IsThrereCheck(MakePheudoPath(IcurrFigure, JcurrFigure, IcurrFigure, JcurrFigure + 1, desk)) && !IsThrereCheck(MakePheudoPath(IcurrFigure, JcurrFigure, IcurrFigure, JcurrFigure + 2, desk))) //Если ход не принесет шаха и король не идет через битое поле.
+                    {
+                        Pathes.Add(new Path(IcurrFigure, JcurrFigure, IcurrFigure, JcurrFigure + 2)); //Добавить этот ход
+                    }
+                }
+            }
+
+            if (IsKingReadyForCastling(IcurrFigure, JcurrFigure) && IsCastleReadyForLongCastling(desk)) //Если король и ладья на правильном месте для длинной рокировки
+            {
+                if (IsTrerePlaceForLongCastling(desk)) //Если место между королем и левой ладьей свободно
+                {
+                    if (!IsThrereCheck(MakePheudoPath(IcurrFigure, JcurrFigure, IcurrFigure, JcurrFigure - 1, desk)) && !IsThrereCheck(MakePheudoPath(IcurrFigure, JcurrFigure, IcurrFigure, JcurrFigure - 2, desk))) //Если ход не принесет шаха и король не идет через битое поле.
+                    {
+                        Pathes.Add(new Path(IcurrFigure, JcurrFigure, IcurrFigure, JcurrFigure - 2)); //Добавить этот ход
+                    }
+                }
+            }
+
+            return Pathes; //Вернуть список ходов
+        }
+
 
 
 

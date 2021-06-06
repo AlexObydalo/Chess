@@ -89,5 +89,29 @@ namespace Chess
 
             PathesTrees.Add(MaxTree); //Добавление в массив ветвей, дерева с максимальной оценкой
         }
+
+        //Получить оценку дерева
+        public int GetMark()
+        {
+            if(!IsThisTurnLast()) //Если это не последний ход
+            {
+                int minMark = 2000; //Минимальная оценка (так как максимальнаяя оценка 1000, она в любом случае измениться)
+
+                //Перебор массива ветвей
+                for (int i = 0; i < Count(); i++)
+                {
+                    if (PathesTrees[i].GetPositionMark() < minMark) //Если оценка позиции меньше минимальной
+                    {
+                        minMark = PathesTrees[i].GetPositionMark(); //Записать оценку позиции как минимальную
+                    }
+                }
+
+                return minMark;
+            }
+            else
+            {
+                return GetPositionMark();
+            }
+        }
     }
 }
