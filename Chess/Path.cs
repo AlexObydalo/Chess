@@ -8,8 +8,8 @@ namespace Chess
 {
     public class Path //Запись хода
     {
-        FigurePosition P1 { get; set; } //Первая позиция
-        FigurePosition P2 { get; set; } //Вторая позиция
+        public FigurePosition P1 { get; set; } //Первая позиция
+        public FigurePosition P2 { get; set; } //Вторая позиция
 
         //Создание записи хода из двух позиций
         public Path(FigurePosition p1, FigurePosition p2)
