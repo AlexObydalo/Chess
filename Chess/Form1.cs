@@ -2587,6 +2587,20 @@ namespace Chess
             return Pathes; //Вернуть список ходов
         }
 
+        //Конвертация списка ходов в позиции
+        public List<GamePosition> ConvertPathesToGamePositions (List<Path> Pathes, int[,] desk)
+        {
+            List<GamePosition> Positions = new List<GamePosition>(); //Создать список позиций
+
+            //Перебор массива ходов
+            foreach(Path p in Pathes)
+            {
+                Positions.Add(new GamePosition(p, MakePheudoPath(p, desk), currPlayer)); //Добавить позицию
+            }
+
+            return Positions; //Вернуть список позиций
+        }
+
 
 
 
