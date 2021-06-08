@@ -38,6 +38,11 @@ namespace Chess
             {8, "h" },
         };
 
+        Random rnd = new Random(); //Генератор случайных чисел
+
+        bool IsComputerPlaying = false; //Играет ли компьютер
+
+        int ComputerPlayer; //Номер игрока, за которого играет компьютер (1 - белый, 2 - черный)
 
         public Image chessSprites;
 
@@ -271,153 +276,160 @@ namespace Chess
             //if (prevButton != null)
             //    prevButton.BackColor = Color.White;
 
-            Button pressedButton = sender as Button;
-
-            //pressedButton.Enabled = false;
-
-            if (map[pressedButton.Location.Y / 50, pressedButton.Location.X / 50] != 0 && map[pressedButton.Location.Y / 50, pressedButton.Location.X / 50] / 10 == currPlayer) //Два условия: клетка не пуста, на клетке наша фигура
+            if(!IsComputerPlaying || currPlayer != ComputerPlayer)//Если компьютер не играет, или во время игры не ход компьютера 
             {
-                CloseSteps(); //Закрыть ходы
-                //pressedButton.BackColor = Color.Red;
-                DeactivateAllButtons(); //Деактивировать кнопки
-                pressedButton.Enabled = true; //Активировать нажатую кнопку
-                ShowSteps(pressedButton.Location.Y / 50, pressedButton.Location.X / 50, map[pressedButton.Location.Y / 50, pressedButton.Location.X / 50]); //Показать ходы
+                Button pressedButton = sender as Button;
 
-                if (isMoving) //Если идет ход
+                //pressedButton.Enabled = false;
+
+                if (map[pressedButton.Location.Y / 50, pressedButton.Location.X / 50] != 0 && map[pressedButton.Location.Y / 50, pressedButton.Location.X / 50] / 10 == currPlayer) //Два условия: клетка не пуста, на клетке наша фигура
                 {
                     CloseSteps(); //Закрыть ходы
-                    //pressedButton.BackColor = Color.White;
-                    ActivateAllButtons(); //Активировать все кнопки
-                    isMoving = false; //Ход не идет
-                    
+                                  //pressedButton.BackColor = Color.Red;
+                    DeactivateAllButtons(); //Деактивировать кнопки
+                    pressedButton.Enabled = true; //Активировать нажатую кнопку
+                    ShowSteps(pressedButton.Location.Y / 50, pressedButton.Location.X / 50, map[pressedButton.Location.Y / 50, pressedButton.Location.X / 50]); //Показать ходы
 
+                    if (isMoving) //Если идет ход
+                    {
+                        CloseSteps(); //Закрыть ходы
+                                      //pressedButton.BackColor = Color.White;
+                        ActivateAllButtons(); //Активировать все кнопки
+                        isMoving = false; //Ход не идет
+
+
+                    }
+                    else
+                        isMoving = true; //Начать ход
                 }
                 else
-                    isMoving = true; //Начать ход
-            }
-            else
-            {
-                if (isMoving) //Если идет ход
                 {
-                    
-                    //Поменять значения клеток местами
-                    int temp = map[pressedButton.Location.Y / 50, pressedButton.Location.X / 50];
-                    map[pressedButton.Location.Y / 50, pressedButton.Location.X / 50] = map[prevButton.Location.Y / 50, prevButton.Location.X / 50];
-                    map[prevButton.Location.Y / 50, prevButton.Location.X / 50] = 0;
-                    
-                    //Поменять  изображения кнопок местами
-                    pressedButton.BackgroundImage = prevButton.BackgroundImage;
-                    prevButton.BackgroundImage = null;
-                    
-                    
-
-                    //если кнопка рокировочная, 
-                    
-                    
-                    
-                    if(map[pressedButton.Location.Y / 50, pressedButton.Location.X / 50] % 10 == 1 && Math.Abs(pressedButton.Location.X / 50 - prevButton.Location.X / 50)==2) //Если король сделал рокировку. Условия: на нажатой клетке король, король сдвинулся на две клетки.
+                    if (isMoving) //Если идет ход
                     {
-                        int dir = (pressedButton.Location.X / 50 - prevButton.Location.X / 50) / 2; //Направление короля: вправо = 1, влево = -1.
-                        if(currPlayer==1)//Рокируються белые
+
+                        //Поменять значения клеток местами
+                        int temp = map[pressedButton.Location.Y / 50, pressedButton.Location.X / 50];
+                        map[pressedButton.Location.Y / 50, pressedButton.Location.X / 50] = map[prevButton.Location.Y / 50, prevButton.Location.X / 50];
+                        map[prevButton.Location.Y / 50, prevButton.Location.X / 50] = 0;
+
+                        //Поменять  изображения кнопок местами
+                        pressedButton.BackgroundImage = prevButton.BackgroundImage;
+                        prevButton.BackgroundImage = null;
+
+
+
+                        //если кнопка рокировочная, 
+
+
+
+                        if (map[pressedButton.Location.Y / 50, pressedButton.Location.X / 50] % 10 == 1 && Math.Abs(pressedButton.Location.X / 50 - prevButton.Location.X / 50) == 2) //Если король сделал рокировку. Условия: на нажатой клетке король, король сдвинулся на две клетки.
                         {
-                            if(dir==1)//Направление короля вправо
+                            int dir = (pressedButton.Location.X / 50 - prevButton.Location.X / 50) / 2; //Направление короля: вправо = 1, влево = -1.
+                            if (currPlayer == 1)//Рокируються белые
                             {
-                                //перемещение ладьи в короткой рокировке
-                                map[0, 5] = map[0, 7]; //Клетка 0.5 приравниваеться клетке 0.7 
-                                map[0, 7] = 0; //Клетка 0.7 обнуляеться
+                                if (dir == 1)//Направление короля вправо
+                                {
+                                    //перемещение ладьи в короткой рокировке
+                                    map[0, 5] = map[0, 7]; //Клетка 0.5 приравниваеться клетке 0.7 
+                                    map[0, 7] = 0; //Клетка 0.7 обнуляеться
+                                }
+                                else //Направление короля влево
+                                {
+                                    //перемещение ладьи в длинной рокировке
+                                    map[0, 3] = map[0, 0]; //Клетка 0.3 приравниваеться клетке 0.0
+                                    map[0, 0] = 0; //Клетка 0.0 обнуляеться
+                                }
                             }
-                            else //Направление короля влево
+                            else//Рокируються черные
                             {
-                                //перемещение ладьи в длинной рокировке
-                                map[0, 3] = map[0, 0]; //Клетка 0.3 приравниваеться клетке 0.0
-                                map[0, 0] = 0; //Клетка 0.0 обнуляеться
+                                if (dir == 1)//Направление короля вправо
+                                {
+                                    //перемещение ладьи в короткой рокировке
+                                    map[7, 5] = map[7, 7]; //Клетка 7.5 приравниваеться клетке 7.7 
+                                    map[7, 7] = 0; //Клетка 7.7 обнуляеться
+                                }
+                                else //Направление короля влево
+                                {
+                                    //перемещение ладьи в длинной рокировке
+                                    map[7, 3] = map[7, 0]; //Клетка 7.3 приравниваеться клетке 7.0
+                                    map[7, 0] = 0; //Клетка 7.0 обнуляеться
+                                }
+                            }
+                            ReDrawMap(); //Перерисовать
+                        }
+
+
+
+                        isMoving = false; //Завершить ход
+
+
+
+                        CloseSteps(); //Закрыть ходы
+                        ActivateAllButtons(); //Активировать все кнопки
+                        SwitchPlayer(); // Сменить игрока
+
+                        PositionNum++; //Увеличить номер позиции
+
+                        if (map[pressedButton.Location.Y / 50, pressedButton.Location.X / 50] % 10 == 6 && (pressedButton.Location.Y / 50 == 7 || pressedButton.Location.Y / 50 == 0)) //Если пешка на краю поля
+                        {
+                            ShowChooseButtonsForPawns();//Показать кнопки превращений пешки
+
+                            DeactivateAllButtons(); //Деактивировать все кнопки (кроме кнопок превращений пешки)
+
+                            PawnI = pressedButton.Location.Y / 50; //записать I пешки
+                            PawnJ = pressedButton.Location.X / 50; //записать J пешки
+                        }
+
+
+
+
+                        // Ход входит в историю
+                        gamehistory.Add(new int[8, 8]);
+                        for (int i = 0; i < 8; i++)
+                        {
+                            for (int j = 0; j < 8; j++)
+                            {
+
+                                gamehistory[PositionNum][i, j] = map[i, j];
                             }
                         }
-                        else//Рокируються черные
+
+                        label2.Text = Convert.ToString(PositionNum); //Отображение номера хода пользователю
+                        button3.Visible = true; //Кнопка "ход назад" видна
+
+                        //Регуляция показа кнопки "ход вперед"
+                        if (PositionNum >= gamehistory.Count - 1) //Если номер последнего хода меньше или равно номеру этого хода
                         {
-                            if (dir == 1)//Направление короля вправо
-                            {
-                                //перемещение ладьи в короткой рокировке
-                                map[7, 5] = map[7, 7]; //Клетка 7.5 приравниваеться клетке 7.7 
-                                map[7, 7] = 0; //Клетка 7.7 обнуляеться
-                            }
-                            else //Направление короля влево
-                            {
-                                //перемещение ладьи в длинной рокировке
-                                map[7, 3] = map[7, 0]; //Клетка 7.3 приравниваеться клетке 7.0
-                                map[7, 0] = 0; //Клетка 7.0 обнуляеться
-                            }
+                            button4.Visible = false;//Кнопка "ход вперед" НЕ видна
                         }
+                        else //Если номер последнего хода больше номера этого хода
+                        {
+                            for (int i = gamehistory.Count - 1; i > PositionNum; i--) //От последней позиции в истории до этой позиции
+                            {
+                                gamehistory.RemoveAt(i); //Удалить из истории позицию номер i
+                            }
+                            button4.Visible = false;//Кнопка "ход вперед" НЕ видна
+                        }
+
                         ReDrawMap(); //Перерисовать
-                    }
-                    
-                    
-                    
-                    isMoving = false; //Завершить ход
 
-                    
-                    
-                    CloseSteps(); //Закрыть ходы
-                    ActivateAllButtons(); //Активировать все кнопки
-                    SwitchPlayer(); // Сменить игрока
-
-                    PositionNum++; //Увеличить номер позиции
-
-                    if(map[pressedButton.Location.Y / 50, pressedButton.Location.X / 50]%10 == 6 && (pressedButton.Location.Y / 50 == 7 || pressedButton.Location.Y / 50 == 0)) //Если пешка на краю поля
-                    {
-                        ShowChooseButtonsForPawns();//Показать кнопки превращений пешки
-
-                        DeactivateAllButtons(); //Деактивировать все кнопки (кроме кнопок превращений пешки)
-
-                        PawnI = pressedButton.Location.Y / 50; //записать I пешки
-                        PawnJ = pressedButton.Location.X / 50; //записать J пешки
-                    }
-                    
-
-                    
-                    
-                    // Ход входит в историю
-                    gamehistory.Add(new int[8,8]);
-                    for (int i = 0; i < 8; i++)
-                    {
-                        for (int j = 0; j < 8; j++)
+                        if (IsThrereCheck(map))//Если есть шах
                         {
-
-                            gamehistory[PositionNum][i, j] = map[i, j];
+                            MakeOurKingRed();//Сделать клетку короля красной
                         }
-                    }
 
-                    label2.Text = Convert.ToString(PositionNum); //Отображение номера хода пользователю
-                    button3.Visible = true; //Кнопка "ход назад" видна
+                        label5.Text = WriteTurn(gamehistory[PositionNum - 1], gamehistory[PositionNum]); //Высветить ход, сделанный игроком
 
-                    //Регуляция показа кнопки "ход вперед"
-                    if(PositionNum >= gamehistory.Count-1) //Если номер последнего хода меньше или равно номеру этого хода
-                    {
-                        button4.Visible = false;//Кнопка "ход вперед" НЕ видна
-                    }
-                    else //Если номер последнего хода больше номера этого хода
-                    {
-                        for(int i = gamehistory.Count-1; i > PositionNum ; i--) //От последней позиции в истории до этой позиции
+                        if(IsComputerPlaying)//Если компьютер играет
                         {
-                            gamehistory.RemoveAt(i); //Удалить из истории позицию номер i
+                            MakeRandomPath();//Сделать случайный ход
                         }
-                        button4.Visible = false;//Кнопка "ход вперед" НЕ видна
-                    }
 
-                    ReDrawMap(); //Перерисовать
-                    
-                    if (IsThrereCheck(map))//Если есть шах
-                    {
-                        MakeOurKingRed();//Сделать клетку короля красной
                     }
-
-                    label5.Text = WriteTurn(gamehistory[PositionNum - 1], gamehistory[PositionNum]); //Высветить ход, сделанный игроком
-                    
-                    
                 }
-            }
 
-            prevButton = pressedButton;
+                prevButton = pressedButton;
+            }
         }
 
         //Смена игрока
@@ -446,6 +458,8 @@ namespace Chess
             //this.Controls.Clear(); //Удаление всех кнопок из Controls
             //Init(); //Запуск новой игры
 
+
+            IsComputerPlaying = false; //Компьютер не играет в шахматы
             ReInit();//Перезапуск игры
         }
 
@@ -935,7 +949,7 @@ namespace Chess
 
         public void ShowChooseButtonsForPawns() //Показать кнопки превращений пешки
         {
-            this.Size = new Size(490, 500);//Расширение поля вниз
+            this.Size = new Size(541, 500);//Расширение поля вниз
             
             
             
@@ -1046,7 +1060,7 @@ namespace Chess
             map[PawnI, PawnJ] = (1 + currPlayer % 2) * 10 + 5; //Запись пешки как ладьи
             ActivateAllButtons(); //Активировать все кнопки
             ReDrawMap(); //Перерисовка карты 
-            this.Size = new Size(490, 440);
+            this.Size = new Size(541, 440);
 
             if (PositionNum >= gamehistory.Count - 1) //Если номер последнего хода меньше или равно номеру этого хода
             {
@@ -1064,7 +1078,7 @@ namespace Chess
             map[PawnI, PawnJ] = (1 + currPlayer%2) * 10 + 4; //Запись пешки как коня
             ActivateAllButtons(); //Активировать все кнопки
             ReDrawMap(); //Перерисовка карты 
-            this.Size = new Size(490, 440);
+            this.Size = new Size(541, 440);
 
             if (PositionNum == gamehistory.Count - 1) //Если номер последнего хода меньше или равно номеру этого хода
             {
@@ -1082,7 +1096,7 @@ namespace Chess
             map[PawnI, PawnJ] = (1 + currPlayer % 2) * 10 + 3; //Запись пешки как офицера
             ActivateAllButtons(); //Активировать все кнопки
             ReDrawMap(); //Перерисовка карты 
-            this.Size = new Size(490, 440);
+            this.Size = new Size(541, 440);
 
             if (PositionNum == gamehistory.Count - 1) //Если номер последнего хода меньше или равно номеру этого хода
             {
@@ -1100,7 +1114,7 @@ namespace Chess
             map[PawnI, PawnJ] = (1 + currPlayer % 2) * 10 + 2; //Запись пешки как королевы
             ActivateAllButtons(); //Активировать все кнопки
             ReDrawMap(); //Перерисовка карты 
-            this.Size = new Size(490, 440);
+            this.Size = new Size(541, 440);
 
             if (PositionNum == gamehistory.Count - 1) //Если номер последнего хода меньше или равно номеру этого хода
             {
@@ -1530,6 +1544,11 @@ namespace Chess
             return IsThrereCheck(MakePheudoPath(I1, J1, I2, J2, map)); //Есть ли шах на доске, созданной псевдоходом
         }
 
+        public bool CanGiveUsCheckOnDesk(int I1, int J1, int I2, int J2, int[,] desk)
+        {
+            return IsThrereCheck(MakePheudoPath(I1, J1, I2, J2, desk)); //Есть ли шах на доске, созданной псевдоходом
+        }
+
 
 
         public string WriteTurn(int[,] prevdesk, int[,] desk) //Метод записи одного хода в шахматной нотации
@@ -1763,6 +1782,7 @@ namespace Chess
                                 PathesCount++; //Увеличить количество ходов на один
                             }
                         }
+                        break; //Закончить цикл
                     }
                     else //Если на клетке нет фигуры
                     {
@@ -1788,6 +1808,7 @@ namespace Chess
                                 PathesCount++; //Увеличить количество ходов на один
                             }
                         }
+                        break; //Закончить цикл
                     }
                     else //Если на клетке нет фигуры
                     {
@@ -1813,6 +1834,7 @@ namespace Chess
                                 PathesCount++; //Увеличить количество ходов на один
                             }
                         }
+                        break; //Закончить цикл
                     }
                     else //Если на клетке нет фигуры
                     {
@@ -1838,6 +1860,7 @@ namespace Chess
                                 PathesCount++; //Увеличить количество ходов на один
                             }
                         }
+                        break; //Закончить цикл
                     }
                     else //Если на клетке нет фигуры
                     {
@@ -1872,6 +1895,7 @@ namespace Chess
                                 PathesCount++; //Увеличить количество ходов на один
                             }
                         }
+                        break; //Закончить цикл
                     }
                     else //Если на клетке нет фигуры
                     {
@@ -1903,6 +1927,7 @@ namespace Chess
                                 PathesCount++; //Увеличить количество ходов на один
                             }
                         }
+                        break; //Закончить цикл
                     }
                     else //Если на клетке нет фигуры
                     {
@@ -1934,6 +1959,7 @@ namespace Chess
                                 PathesCount++; //Увеличить количество ходов на один
                             }
                         }
+                        break; //Закончить цикл
                     }
                     else //Если на клетке нет фигуры
                     {
@@ -1965,6 +1991,7 @@ namespace Chess
                                 PathesCount++; //Увеличить количество ходов на один
                             }
                         }
+                        break; //Закончить цикл
                     }
                     else //Если на клетке нет фигуры
                     {
@@ -2093,10 +2120,8 @@ namespace Chess
                         {
                             case 6://Для пешек
 
-                                List<Path> PawnPathes = GivePawnPathes(desk, i, j); //Список ходов пешки
-
-                                //Перебрать ходы фигуры 
-                                foreach(Path p in PawnPathes)
+                                //Перебрать ходы фигуры (cписок ходов пешки)
+                                foreach (Path p in GivePawnPathes(desk, i, j))
                                 {
                                     AllPathes.Add(p); //Добавить ход фигуры в список всех ходов
                                 }
@@ -2104,11 +2129,9 @@ namespace Chess
                                 break;
 
                             case 5://Для ладей
-
-                                List<Path> CastlePathes = GiveHorizontalVericalPathes(desk, i, j); //Список ходов ладьи
                                 
-                                //Перебрать ходы фигуры 
-                                foreach (Path p in CastlePathes)
+                                //Перебрать ходы фигуры (список ходов ладьи)
+                                foreach (Path p in GiveHorizontalVericalPathes(desk, i, j))
                                 {
                                     AllPathes.Add(p); //Добавить ход фигуры в список всех ходов
                                 }
@@ -2117,10 +2140,10 @@ namespace Chess
 
                             case 4://Для коней
 
-                                List<Path> HorsePathes = GiveHorsePathes(desk, i, j); //Список ходов коня
 
-                                //Перебрать ходы фигуры 
-                                foreach (Path p in HorsePathes)
+
+                                //Перебрать ходы фигуры (список ходов коня)
+                                foreach (Path p in GiveHorsePathes(desk, i, j))
                                 {
                                     AllPathes.Add(p); //Добавить ход фигуры в список всех ходов
                                 }
@@ -2129,10 +2152,8 @@ namespace Chess
 
                             case 3://Для офицеров
 
-                                List<Path> OfficerPathes = GiveDioganalPathes(desk, i, j); //Список ходов офицера
-
-                                //Перебрать ходы фигуры 
-                                foreach (Path p in OfficerPathes)
+                                //Перебрать ходы фигуры (список ходов офицера)
+                                foreach (Path p in GiveDioganalPathes(desk, i, j))
                                 {
                                     AllPathes.Add(p); //Добавить ход фигуры в список всех ходов
                                 }
@@ -2141,19 +2162,15 @@ namespace Chess
 
                             case 2://Для ферзей
 
-                                List<Path> DioganalPathes = GiveDioganalPathes(desk, i, j); //Список ходов офицера
 
-                                //Перебрать ходы фигуры 
-                                foreach (Path p in DioganalPathes)
+                                //Перебрать ходы фигуры (список ходов офицера)
+                                foreach (Path p in GiveDioganalPathes(desk, i, j))
                                 {
                                     AllPathes.Add(p); //Добавить ход фигуры в список всех ходов
                                 }
 
-
-                                List<Path> HVPathes = GiveDioganalPathes(desk, i, j); //Список ходов ладьи
-
-                                //Перебрать ходы фигуры 
-                                foreach (Path p in HVPathes)
+                                //Перебрать ходы фигуры (список ходов ладьи)
+                                foreach (Path p in GiveDioganalPathes(desk, i, j))
                                 {
                                     AllPathes.Add(p); //Добавить ход фигуры в список всех ходов
                                 }
@@ -2162,27 +2179,21 @@ namespace Chess
 
                             case 1://Для короля
 
-                                List<Path> OneStepDioganalPathes = GiveDioganalPathes(desk, i, j, true); //Список диагональных ходов короля
+                                //Перебрать ходы фигуры (список диагональных ходов короля)
+                                foreach (Path p in GiveDioganalPathes(desk, i, j, true))
+                                {
+                                    AllPathes.Add(p); //Добавить ход фигуры в список всех ходов
+                                }
 
-                                //Перебрать ходы фигуры 
-                                foreach (Path p in OneStepDioganalPathes)
+                                //Перебрать ходы фигуры (список вертикально-горизонтальных ходов короля)
+                                foreach (Path p in GiveDioganalPathes(desk, i, j, true))
                                 {
                                     AllPathes.Add(p); //Добавить ход фигуры в список всех ходов
                                 }
 
 
-                                List<Path> OneStepCastlePathes = GiveHorizontalVericalPathes(desk, i, j, true); ///Список вертикально-горизонтальных ходов короля
-
-                                //Перебрать ходы фигуры 
-                                foreach (Path p in OneStepCastlePathes)
-                                {
-                                    AllPathes.Add(p); //Добавить ход фигуры в список всех ходов
-                                }
-
-                                List<Path> CastlngPathes = GiveCastlingPathes(desk, i, j); ///Список рокировочных ходов короля
-
-                                //Перебрать ходы фигуры 
-                                foreach (Path p in CastlngPathes)
+                                //Перебрать ходы фигуры (cписок рокировочных ходов короля)
+                                foreach (Path p in GiveCastlingPathes(desk, i, j))
                                 {
                                     AllPathes.Add(p); //Добавить ход фигуры в список всех ходов
                                 }
@@ -2263,15 +2274,16 @@ namespace Chess
                     {
                         if (desk[i, JcurrFigure] / 10 != currPlayer)//Если фигура не наша
                         {
-                            if (!IsThrereCheck(MakePheudoPath(IcurrFigure, JcurrFigure, i, JcurrFigure, desk))) //Если после хода нет шаха
+                            if (!CanGiveUsCheckOnDesk(IcurrFigure, JcurrFigure, i, JcurrFigure, desk)) //Если после хода нет шаха
                             {
                                 Pathes.Add(new Path(IcurrFigure, JcurrFigure, i, JcurrFigure)); //Добавить этот ход
                             }
                         }
+                        break; //Закончить цикл
                     }
                     else //Если на клетке нет фигуры
                     {
-                        if (!IsThrereCheck(MakePheudoPath(IcurrFigure, JcurrFigure, i, JcurrFigure, desk))) //Если после хода нет шаха
+                        if (!CanGiveUsCheckOnDesk(IcurrFigure, JcurrFigure, i, JcurrFigure, desk)) //Если после хода нет шаха
                         {
                             Pathes.Add(new Path(IcurrFigure, JcurrFigure, i, JcurrFigure)); //Добавить этот ход
                         }
@@ -2288,15 +2300,16 @@ namespace Chess
                     {
                         if (desk[i, JcurrFigure] / 10 != currPlayer)//Если фигура не наша
                         {
-                            if (!IsThrereCheck(MakePheudoPath(IcurrFigure, JcurrFigure, i, JcurrFigure, desk))) //Если после хода нет шаха
+                            if (!CanGiveUsCheckOnDesk(IcurrFigure, JcurrFigure, i, JcurrFigure, desk)) //Если после хода нет шаха
                             {
                                 Pathes.Add(new Path(IcurrFigure, JcurrFigure, i, JcurrFigure)); //Добавить этот ход
                             }
                         }
+                        break; //Закончить цикл
                     }
                     else //Если на клетке нет фигуры
                     {
-                        if (!IsThrereCheck(MakePheudoPath(IcurrFigure, JcurrFigure, i, JcurrFigure, desk))) //Если после хода нет шаха
+                        if (!CanGiveUsCheckOnDesk(IcurrFigure, JcurrFigure, i, JcurrFigure, desk)) //Если после хода нет шаха
                         {
                             Pathes.Add(new Path(IcurrFigure, JcurrFigure, i, JcurrFigure)); //Добавить этот ход
                         }
@@ -2313,15 +2326,16 @@ namespace Chess
                     {
                         if (desk[IcurrFigure, j] / 10 != currPlayer)//Если фигура не наша
                         {
-                            if (!IsThrereCheck(MakePheudoPath(IcurrFigure, JcurrFigure, IcurrFigure, j, desk))) //Если после хода нет шаха
+                            if (!CanGiveUsCheckOnDesk(IcurrFigure, JcurrFigure, IcurrFigure, j, desk)) //Если после хода нет шаха
                             {
                                 Pathes.Add(new Path(IcurrFigure, JcurrFigure, IcurrFigure, j)); //Добавить этот ход
                             }
                         }
+                        break; //Закончить цикл
                     }
                     else //Если на клетке нет фигуры
                     {
-                        if (!IsThrereCheck(MakePheudoPath(IcurrFigure, IcurrFigure, IcurrFigure, j, desk))) //Если после хода нет шаха
+                        if (!CanGiveUsCheckOnDesk(IcurrFigure, IcurrFigure, IcurrFigure, j, desk)) //Если после хода нет шаха
                         {
                             Pathes.Add(new Path(IcurrFigure, JcurrFigure, IcurrFigure, j)); //Добавить этот ход
                         }
@@ -2338,15 +2352,16 @@ namespace Chess
                     {
                         if (desk[IcurrFigure, j] / 10 != currPlayer)//Если фигура не наша
                         {
-                            if (!IsThrereCheck(MakePheudoPath(IcurrFigure, JcurrFigure, IcurrFigure, j, desk))) //Если после хода нет шаха
+                            if (!CanGiveUsCheckOnDesk(IcurrFigure, JcurrFigure, IcurrFigure, j, desk)) //Если после хода нет шаха
                             {
                                 Pathes.Add(new Path(IcurrFigure, JcurrFigure, IcurrFigure, j)); //Добавить этот ход
                             }
                         }
+                        break; //Закончить цикл
                     }
                     else //Если на клетке нет фигуры
                     {
-                        if (!IsThrereCheck(MakePheudoPath(IcurrFigure, IcurrFigure, IcurrFigure, j, desk))) //Если после хода нет шаха
+                        if (!CanGiveUsCheckOnDesk(IcurrFigure, IcurrFigure, IcurrFigure, j, desk)) //Если после хода нет шаха
                         {
                             Pathes.Add(new Path(IcurrFigure, JcurrFigure, IcurrFigure, j)); //Добавить этот ход
                         }
@@ -2373,15 +2388,17 @@ namespace Chess
                     {
                         if (desk[i, j] / 10 != currPlayer)//Если фигура не наша
                         {
-                            if (!IsThrereCheck(MakePheudoPath(IcurrFigure, JcurrFigure, i, j, desk))) //Если после хода нет шаха
+                            if (!CanGiveUsCheckOnDesk(IcurrFigure, JcurrFigure, i, j, desk)) //Если после хода нет шаха
                             {
                                 Pathes.Add(new Path(IcurrFigure, JcurrFigure, i, j)); //Добавить этот ход
                             }
                         }
+                        break;
+                        
                     }
                     else //Если на клетке нет фигуры
                     {
-                        if (!IsThrereCheck(MakePheudoPath(IcurrFigure, JcurrFigure, i, j, desk))) //Если после хода нет шаха
+                        if (!CanGiveUsCheckOnDesk(IcurrFigure, JcurrFigure, i, j, desk)) //Если после хода нет шаха
                         {
                             Pathes.Add(new Path(IcurrFigure, JcurrFigure, i, j)); //Добавить этот ход
                         }
@@ -2404,15 +2421,16 @@ namespace Chess
                     {
                         if (desk[i, j] / 10 != currPlayer)//Если фигура не наша
                         {
-                            if (!IsThrereCheck(MakePheudoPath(IcurrFigure, JcurrFigure, i, j, desk))) //Если после хода нет шаха
+                            if (!CanGiveUsCheckOnDesk(IcurrFigure, JcurrFigure, i, j, desk)) //Если после хода нет шаха
                             {
                                 Pathes.Add(new Path(IcurrFigure, JcurrFigure, i, j)); //Добавить этот ход
                             }
                         }
+                        break; //Закончить цикл
                     }
                     else //Если на клетке нет фигуры
                     {
-                        if (!IsThrereCheck(MakePheudoPath(IcurrFigure, JcurrFigure, i, j, desk))) //Если после хода нет шаха
+                        if (!CanGiveUsCheckOnDesk(IcurrFigure, JcurrFigure, i, j, desk)) //Если после хода нет шаха
                         {
                             Pathes.Add(new Path(IcurrFigure, JcurrFigure, i, j)); //Добавить этот ход
                         }
@@ -2435,15 +2453,16 @@ namespace Chess
                     {
                         if (desk[i, j] / 10 != currPlayer)//Если фигура не наша
                         {
-                            if (!IsThrereCheck(MakePheudoPath(IcurrFigure, JcurrFigure, i, j, desk))) //Если после хода нет шаха
+                            if (!CanGiveUsCheckOnDesk(IcurrFigure, JcurrFigure, i, j, desk)) //Если после хода нет шаха
                             {
                                 Pathes.Add(new Path(IcurrFigure, JcurrFigure, i, j)); //Добавить этот ход
                             }
                         }
+                        break; //Закончить цикл
                     }
                     else //Если на клетке нет фигуры
                     {
-                        if (!IsThrereCheck(MakePheudoPath(IcurrFigure, JcurrFigure, i, j, desk))) //Если после хода нет шаха
+                        if (!CanGiveUsCheckOnDesk(IcurrFigure, JcurrFigure, i, j, desk)) //Если после хода нет шаха
                         {
                             Pathes.Add(new Path(IcurrFigure, JcurrFigure, i, j)); //Добавить этот ход
                         }
@@ -2466,15 +2485,16 @@ namespace Chess
                     {
                         if (desk[i, j] / 10 != currPlayer)//Если фигура не наша
                         {
-                            if (!IsThrereCheck(MakePheudoPath(IcurrFigure, JcurrFigure, i, j, desk))) //Если после хода нет шаха
+                            if (!CanGiveUsCheckOnDesk(IcurrFigure, JcurrFigure, i, j, desk)) //Если после хода нет шаха
                             {
                                 Pathes.Add(new Path(IcurrFigure, JcurrFigure, i, j)); //Добавить этот ход
                             }
                         }
+                        break; //Закончить цикл
                     }
                     else //Если на клетке нет фигуры
                     {
-                        if (!IsThrereCheck(MakePheudoPath(IcurrFigure, JcurrFigure, i, j, desk))) //Если после хода нет шаха
+                        if (!CanGiveUsCheckOnDesk(IcurrFigure, JcurrFigure, i, j, desk)) //Если после хода нет шаха
                         {
                             Pathes.Add(new Path(IcurrFigure, JcurrFigure, i, j)); //Добавить этот ход
                         }
@@ -2601,7 +2621,52 @@ namespace Chess
             return Positions; //Вернуть список позиций
         }
 
+        //Сделать случайный ход
+        public void MakeRandomPath()
+        {
 
+            DeactivateAllButtons();//Деактивировать все кнопки
+            List<Path> Pathes = GivePathes(map);//Массив ходов
+            if(Pathes.Count == 0)//Если ходов нет
+            {
+                ActivateAllButtons(); //Активировать все кнопки
+            }
+            else
+            {
+                Path RandomPath = Pathes[rnd.Next(0, Pathes.Count - 1)]; //Выбор случайного хода
+                int[,] newDesk = MakePheudoPath(RandomPath, map);//Создание псевдохода
+
+                //Перебор доски
+                for (int i = 0; i < 8; i++)
+                {
+                    for (int j = 0; j < 8; j++)
+                    {
+                        map[i, j] = newDesk[i, j]; //Занесение позиции новой доски на действительную
+                    }
+                }
+
+                SwitchPlayer(); // Сменить игрока
+
+                PositionNum++; //Увеличить номер позиции
+
+                // Ход входит в историю
+                gamehistory.Add(new int[8, 8]);
+                for (int i = 0; i < 8; i++)
+                {
+                    for (int j = 0; j < 8; j++)
+                    {
+
+                        gamehistory[PositionNum][i, j] = map[i, j];
+                    }
+                }
+
+                label5.Text = WriteTurn(gamehistory[PositionNum - 1], gamehistory[PositionNum]); //Высветить ход, сделанный игроком
+
+                ReDrawMap();//Перерисовать карту
+
+                ActivateAllButtons();//Активировать все кнопки
+            }
+        }
 
 
         private void label1_Click(object sender, EventArgs e)
@@ -2625,6 +2690,21 @@ namespace Chess
             {
                 WriteHistorytoFile(ConvertHistoryToStringList(gamehistory), textBox1.Text); //Записать историю игры в файл
             }
+        }
+
+        //Кнопка "играть с компьютером за белых"
+        private void button6_Click(object sender, EventArgs e)
+        {
+            IsComputerPlaying = true; //Компьютер играет в шахматы
+            ComputerPlayer = 2; //Компьбтер играет за черных
+        }
+
+        //Кнопка "играть с компьютером за черных"
+        private void button7_Click(object sender, EventArgs e)
+        {
+            IsComputerPlaying = true; //Компьютер играет в шахматы
+            ComputerPlayer = 1; //Компьбтер играет за белых
+            MakeRandomPath();//Сделать случайный ход
         }
     }
 

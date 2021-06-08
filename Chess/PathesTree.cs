@@ -62,7 +62,7 @@ namespace Chess
         }
 
         //Получить оценку позиции
-        public int GetPositionMark()
+        public double GetPositionMark()
         {
             return GamePosition.GetMark();
         }
@@ -70,7 +70,7 @@ namespace Chess
         //Удалить все ветви кроме ветви с лучшей оценкой
         public void CutLowTrees()
         {
-            int maxMark = -2000; //Максимальная оценка (так как минимальная оценка -1000, она в любом случае измениться)
+            double maxMark = -2000; //Максимальная оценка (так как минимальная оценка -1000, она в любом случае измениться)
             int MaxTreeNum = 0; //Номер ветви с максимальной оценкой
             
             //Перебор массива ветвей
@@ -91,16 +91,16 @@ namespace Chess
         }
 
         //Получить оценку дерева
-        public int GetMark()
+        public double GetMark()
         {
             if(!IsThisTurnLast()) //Если это не последний ход
             {
-                int minMark = 2000; //Минимальная оценка (так как максимальнаяя оценка 1000, она в любом случае измениться)
+                double minMark = 2000; //Минимальная оценка (так как максимальнаяя оценка 1000, она в любом случае измениться)
 
                 //Перебор массива ветвей
                 for (int i = 0; i < Count(); i++)
                 {
-                    if (PathesTrees[i].GetPositionMark() < minMark) //Если оценка позиции меньше минимальной
+                    if (PathesTrees[i].GetMark() < minMark) //Если оценка позиции меньше минимальной
                     {
                         minMark = PathesTrees[i].GetPositionMark(); //Записать оценку позиции как минимальную
                     }

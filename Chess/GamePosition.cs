@@ -14,10 +14,10 @@ namespace Chess
         public int currPlayer { get; set; } //Игрок который ходит
         public Path Path { get; set; } //Запись хода
 
-        public int GetMark()
+        public double GetMark()
         {
-            int OurPathesNum = CountYourPathes(Desk); //Подсчет наших ходов
-            int EnemyPathesNum = CountEnemyPathes(Desk); //Подсчет ходов врага
+            double OurPathesNum = CountYourPathes(Desk); //Подсчет наших ходов
+            double EnemyPathesNum = CountEnemyPathes(Desk); //Подсчет ходов врага
 
             //Если у каждого есть ходы
             if (OurPathesNum!=0 && EnemyPathesNum != 0)
