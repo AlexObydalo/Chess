@@ -107,14 +107,14 @@ namespace Chess
             // Расстановка фигур на карте
             map = new int[8, 8] 
         {
-            {15, 14, 13, 12, 11, 13, 14, 15}, 
-            {16, 16, 16, 16, 16, 16, 16, 16}, 
-            {0, 0, 0, 0, 0, 0, 0, 0}, 
-            {0, 0, 0, 0, 0, 0, 0, 0},
-            {0, 0, 0, 0, 0, 0, 0, 0},
-            {0, 0, 0, 0, 0, 0, 0, 0},
-            {26, 26, 26, 26, 26, 26, 26, 26},
-            {25, 24, 23, 22, 21, 23, 24, 25},
+            {15, 14, 13, 12, 11, 13, 14, 15},
+               {16, 16, 16, 16, 16, 16, 16, 16},
+               {0, 0, 0, 0, 0, 0, 0, 0},
+               {0, 0, 0, 0, 0, 0, 0, 0},
+               {0, 0, 0, 0, 0, 0, 0, 0},
+               {0, 0, 0, 0, 0, 0, 0, 0},
+               {26, 26, 26, 26, 26, 26, 26, 26},
+               {25, 24, 23, 22, 21, 23, 24, 25},
         };
 
 
@@ -372,12 +372,18 @@ namespace Chess
 
                         if (map[pressedButton.Location.Y / 50, pressedButton.Location.X / 50] % 10 == 6 && (pressedButton.Location.Y / 50 == 7 || pressedButton.Location.Y / 50 == 0)) //Если пешка на краю поля
                         {
-                            ShowChooseButtonsForPawns();//Показать кнопки превращений пешки
+                            if(!IsComputerPlaying)//Если компьютер не играет
+                            {
+                                ShowChooseButtonsForPawns();//Показать кнопки превращений пешки
 
-                            DeactivateAllButtons(); //Деактивировать все кнопки (кроме кнопок превращений пешки)
+                                DeactivateAllButtons(); //Деактивировать все кнопки (кроме кнопок превращений пешки)
+                            }
+                            else //Если компьютер играет
+                            {
+                                map[pressedButton.Location.Y / 50, pressedButton.Location.X / 50] -= 4;//Превратить пешку в королеву
+                            }
+                            
 
-                            PawnI = pressedButton.Location.Y / 50; //записать I пешки
-                            PawnJ = pressedButton.Location.X / 50; //записать J пешки
                         }
 
 
@@ -2170,7 +2176,7 @@ namespace Chess
                                 }
 
                                 //Перебрать ходы фигуры (список ходов ладьи)
-                                foreach (Path p in GiveDioganalPathes(desk, i, j))
+                                foreach (Path p in GiveHorizontalVericalPathes(desk, i, j))
                                 {
                                     AllPathes.Add(p); //Добавить ход фигуры в список всех ходов
                                 }
@@ -2186,7 +2192,7 @@ namespace Chess
                                 }
 
                                 //Перебрать ходы фигуры (список вертикально-горизонтальных ходов короля)
-                                foreach (Path p in GiveDioganalPathes(desk, i, j, true))
+                                foreach (Path p in GiveHorizontalVericalPathes(desk, i, j, true))
                                 {
                                     AllPathes.Add(p); //Добавить ход фигуры в список всех ходов
                                 }
@@ -2258,7 +2264,19 @@ namespace Chess
                 }
             }
 
-            return Pathes; //Вернуть список ходов
+            List<Path> Pathes2 = new List<Path>(); //Список конечных ходов
+
+            //Перебор начального списка ходов
+            foreach (Path p in Pathes)
+            {
+                if (!CanGiveUsCheckOnDesk(p.P1.I, p.P1.J, p.P2.I, p.P2.J, desk)) //Если при ходе нет мата 
+                {
+                    Pathes2.Add(p);//Добавить ход в конечный список ходов
+                }
+            }
+
+
+            return Pathes2; //Вернуть конечный список ходов
         }
 
         //Дать все вертикально-горизонтальные ходы
@@ -2371,7 +2389,19 @@ namespace Chess
                     break;
             }
 
-            return Pathes; //Вернуть список ходов
+            List<Path> Pathes2 = new List<Path>(); //Список конечных ходов
+
+            //Перебор начального списка ходов
+            foreach (Path p in Pathes)
+            {
+                if (!CanGiveUsCheckOnDesk(p.P1.I, p.P1.J, p.P2.I, p.P2.J, desk)) //Если при ходе нет мата 
+                {
+                   Pathes2.Add(p);//Добавить ход в конечный список ходов
+                }
+            }
+            
+            
+            return Pathes2; //Вернуть конечный список ходов
         }
 
         //Дать все диагональные ходы
@@ -2508,7 +2538,19 @@ namespace Chess
                     break;
             }
 
-            return Pathes; //Вернуть список ходов
+            List<Path> Pathes2 = new List<Path>(); //Список конечных ходов
+
+            //Перебор начального списка ходов
+            foreach (Path p in Pathes)
+            {
+                if (!CanGiveUsCheckOnDesk(p.P1.I, p.P1.J, p.P2.I, p.P2.J, desk)) //Если при ходе нет мата 
+                {
+                    Pathes2.Add(p);//Добавить ход в конечный список ходов
+                }
+            }
+
+
+            return Pathes2; //Вернуть конечный список ходов
         }
 
         //Дать все ходы конем
@@ -2573,7 +2615,19 @@ namespace Chess
                 }
             }
 
-            return Pathes; //Вернуть список ходов
+            List<Path> Pathes2 = new List<Path>(); //Список конечных ходов
+
+            //Перебор начального списка ходов
+            foreach (Path p in Pathes)
+            {
+                if (!CanGiveUsCheckOnDesk(p.P1.I, p.P1.J, p.P2.I, p.P2.J, desk)) //Если при ходе нет мата 
+                {
+                    Pathes2.Add(p);//Добавить ход в конечный список ходов
+                }
+            }
+
+
+            return Pathes2; //Вернуть конечный список ходов
         }
 
 
@@ -2604,7 +2658,20 @@ namespace Chess
                 }
             }
 
-            return Pathes; //Вернуть список ходов
+            List<Path> Pathes2 = new List<Path>(); //Список конечных ходов
+
+
+            //Перебор начального списка ходов
+            foreach (Path p in Pathes)
+            {
+                if (!CanGiveUsCheckOnDesk(p.P1.I, p.P1.J, p.P2.I, p.P2.J, desk)) //Если при ходе нет мата 
+                {
+                    Pathes2.Add(p);//Добавить ход в конечный список ходов
+                }
+            }
+
+
+            return Pathes2; //Вернуть конечный список ходов
         }
 
         //Конвертация списка ходов в позиции
@@ -2618,7 +2685,7 @@ namespace Chess
                 Positions.Add(new GamePosition(p, MakePheudoPath(p, desk), currPlayer)); //Добавить позицию
             }
 
-            return Positions; //Вернуть список позиций
+            return Positions;
         }
 
         //Сделать случайный ход
