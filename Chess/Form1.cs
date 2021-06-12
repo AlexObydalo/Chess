@@ -14,7 +14,7 @@ namespace Chess
 {
     public partial class Form1 : Form
     {
-        int MaxTreeNum = 1; //Максимальный номер слоя деревьев
+        int MaxTreeNum = 2; //Максимальный номер слоя деревьев
 
         int TreeNum = 0; //Текущий номер слоя деревьев
 
@@ -1531,14 +1531,14 @@ namespace Chess
                     if(J1 - J2 == 2) //Если король пошел вправо
                     {
                         //Переместить ладью на два хода влево
-                        desk[I1, 5] = desk[I1, 7]; 
-                        desk[I1, 7] = 0;
+                        desk[I1, 3] = desk[I1, 0]; 
+                        desk[I1, 0] = 0;
                     }
                     else //Если король пошел влево
                     {
                         //Переместить ладью на три хода вправо
-                        desk[I1, 3] = desk[I1, 0];
-                        desk[I1, 0] = 0;
+                        desk[I1, 7] = desk[I1, 5];
+                        desk[I1, 7] = 0;
                     }
                 }
             }
@@ -2847,12 +2847,12 @@ namespace Chess
             {
                 if (TreeNum < MaxTreeNum) //Если текущий слой дерева меньше максимального
                 {
-                    //Перебор списка деревьев в каждом дереве из первого списка
-                    foreach (PathesTree t in GiveTurnsToTree(Trees[i]))
-                    {
-                        Trees[i].PathesTrees.Add(t); //Добавить дерево
-                    }
+                    Trees[i].PathesTrees = GiveTurnsToTree(Trees[i]);
                 }
+                //else
+                //{
+                //    TreeNum = 0; //Обнулить количество слоев
+                //}
             }
 
             return Trees;
