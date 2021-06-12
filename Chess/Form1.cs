@@ -2783,17 +2783,13 @@ namespace Chess
             
             if(Trees.Count() != 0) //Если количество ходов больше нуля
             {
-                //TreeNum = 0; //Слой дерева нулевой
+                TreeNum = 0; //Слой дерева нулевой
 
-                ////Просчет ветвей для каждого дерева ходов
-                //foreach (PathesTree t in Trees)
-                //{
-                //    //Перебор списка деревьев в каждом дереве из первого списка
-                //    foreach (PathesTree t2 in GiveTurnsToTree(t))
-                //    {
-                //        t.PathesTrees.Add(t2); //Добавить дерево
-                //    }
-                //}
+                //Просчет ветвей для каждого дерева ходов
+                for (int i = 0; i < Trees.Count; i++)
+                {
+                    Trees[i].PathesTrees = GiveTurnsToTree(Trees[i]);
+                }
 
 
 
@@ -2838,29 +2834,29 @@ namespace Chess
 
         }
 
-        ////Просчитать ветви дерева
-        //public List<PathesTree> GiveTurnsToTree(PathesTree tree)
-        //{
-        //    TreeNum++; //Повысить слой дерева
+        //Просчитать ветви дерева
+        public List<PathesTree> GiveTurnsToTree(PathesTree tree)
+        {
+            TreeNum++; //Повысить слой дерева
 
-        //    List<Path> Pathes = GivePathes(tree.GamePosition.Desk); //Список возможных ходов
-        //    List<PathesTree> Trees = ConvertPathestoTrees(Pathes, tree.GamePosition.Desk); //Список деревьев ходов
+            List<Path> Pathes = GivePathes(tree.GamePosition.Desk); //Список возможных ходов
+            List<PathesTree> Trees = ConvertPathestoTrees(Pathes, tree.GamePosition.Desk); //Список деревьев ходов
 
-        //    //Перебор списка деревьев
-        //    for (int i = 0; i < Trees.Count; i++)
-        //    {
-        //        if (TreeNum < MaxTreeNum) //Если текущий слой дерева меньше максимального
-        //        {
-        //            //Перебор списка деревьев в каждом дереве из первого списка
-        //            foreach (PathesTree t in GiveTurnsToTree(Trees[i]))
-        //            {
-        //                Trees[i].PathesTrees.Add(t); //Добавить дерево
-        //            }
-        //        }
-        //    }
+            //Перебор списка деревьев
+            for (int i = 0; i < Trees.Count; i++)
+            {
+                if (TreeNum < MaxTreeNum) //Если текущий слой дерева меньше максимального
+                {
+                    //Перебор списка деревьев в каждом дереве из первого списка
+                    foreach (PathesTree t in GiveTurnsToTree(Trees[i]))
+                    {
+                        Trees[i].PathesTrees.Add(t); //Добавить дерево
+                    }
+                }
+            }
 
-        //    return Trees;
-        //}
+            return Trees;
+        }
 
 
         private void label1_Click(object sender, EventArgs e)
