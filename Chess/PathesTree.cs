@@ -8,58 +8,57 @@ namespace Chess
 {
     public class PathesTree // Древо ходов
     {
-        
-        public int Count()
-        {
-            return PathesTrees.Count;
-        }
-        
+
+        //public int Count()
+        //{
+        //    return PathesTrees.Count;
+        //}
+
         public bool IsThisTurnLast()
         {
-            return Count() == 0;
+            return PathesTrees == null;
         }
         public GamePosition GamePosition { get; set; } // Корневая позиция
 
         public int TurnNum { get; set; } //Номер хода
         
         //Запись дерева по игровой позиции и номеру хода
-        public PathesTree(GamePosition gamePosition, int turnNum)
+        public PathesTree(GamePosition gamePosition)
         {
             GamePosition = gamePosition;
-            TurnNum = turnNum;
         }
 
         public List<PathesTree> PathesTrees { get; set; } //Массив ветвей
 
         //Добавление дерева в массив ветвей
-        public void Add(PathesTree pathesTree)
-        {
-            PathesTrees.Add(pathesTree);
-        }
+        //public void Add(PathesTree pathesTree)
+        //{
+        //    PathesTrees.Add(pathesTree);
+        //}
 
-        //Добавление позиции в массив ветвей
-        public void Add(GamePosition gamePosition)
-        {
-            PathesTrees.Add(new PathesTree(gamePosition, TurnNum+1));
-        }
+        ////Добавление позиции в массив ветвей
+        //public void Add(GamePosition gamePosition)
+        //{
+        //    PathesTrees.Add(new PathesTree(gamePosition));
+        //}
 
-        //Возвращение дерева из массива ветвей
-        public PathesTree GiveTree(int num)
-        {
-            return PathesTrees[num];
-        }
+        ////Возвращение дерева из массива ветвей
+        //public PathesTree GiveTree(int num)
+        //{
+        //    return PathesTrees[num];
+        //}
 
-        //Возвращение позиции из массива ветвей
-        public GamePosition GivePosition(int num)
-        {
-            return PathesTrees[num].GamePosition;
-        }
+        ////Возвращение позиции из массива ветвей
+        //public GamePosition GivePosition(int num)
+        //{
+        //    return PathesTrees[num].GamePosition;
+        //}
 
-        //Удаление дерева из массива ветвей
-        public void DelTree(int num)
-        {
-            PathesTrees.RemoveAt(num);
-        }
+        ////Удаление дерева из массива ветвей
+        //public void DelTree(int num)
+        //{
+        //    PathesTrees.RemoveAt(num);
+        //}
 
         //Получить оценку позиции
         public double GetPositionMark()
@@ -74,7 +73,7 @@ namespace Chess
             int MaxTreeNum = 0; //Номер ветви с максимальной оценкой
             
             //Перебор массива ветвей
-            for(int i = 0; i < Count(); i++)
+            for(int i = 0; i < PathesTrees.Count; i++)
             {
                 if(PathesTrees[i].GetPositionMark() > maxMark) //Если оценка позиции больше максимальной
                 {
@@ -98,7 +97,7 @@ namespace Chess
                 double minMark = 2000; //Минимальная оценка (так как максимальнаяя оценка 1000, она в любом случае измениться)
 
                 //Перебор массива ветвей
-                for (int i = 0; i < Count(); i++)
+                for (int i = 0; i < PathesTrees.Count; i++)
                 {
                     if (PathesTrees[i].GetMark() < minMark) //Если оценка позиции меньше минимальной
                     {

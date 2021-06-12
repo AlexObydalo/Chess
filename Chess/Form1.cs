@@ -14,6 +14,12 @@ namespace Chess
 {
     public partial class Form1 : Form
     {
+        int MaxTreeNum = 1; //Максимальный номер слоя деревьев
+
+        int TreeNum = 0; //Текущий номер слоя деревьев
+
+        
+        
         Dictionary<int, string> FiguresNotation = new Dictionary<int, string> //Словарь записи фигур (в цифрах и буквах)
         {
             //Запись фигуры зависит от единицы, в числе на клетке  
@@ -95,9 +101,13 @@ namespace Chess
             //Graphics g = Graphics.FromImage(part);
             //g.DrawImage(chessSprites, new Rectangle(0, 0, 50, 50), 0, 0, 150, 150, GraphicsUnit.Pixel);
             //button1.BackgroundImage = part;
+           
+
 
             Init();
         }
+
+        
 
         //Потготовка новой игры
         public void Init()
@@ -428,7 +438,7 @@ namespace Chess
 
                         if(IsComputerPlaying)//Если компьютер играет
                         {
-                            MakeRandomPath();//Сделать случайный ход
+                            MakePathAI();//Сделать ход искуственного интеллекта
                         }
 
                     }
@@ -2735,6 +2745,123 @@ namespace Chess
             }
         }
 
+        //Конвертациия ходов в деревья ходов
+        public List<PathesTree> ConvertPathestoTrees(List<Path> Pathes, int[,] desk)
+        {
+            List<GamePosition> Positions = ConvertPathesToGamePositions(Pathes, desk); //Получение списка позиций
+
+            List<PathesTree> Trees = new List<PathesTree>(); //Список деревьев
+
+            //Перечисление элементов списка позиций
+            for(int i = 0; i < Positions.Count; i++)
+            {
+                Trees.Add(new PathesTree(Positions[i])); //Добавление дерева ходов
+                Trees[i].GamePosition.currPlayer = ComputerPlayer; //В дереве у позиции ход компьютера (необходимо для оценки позиции в пользу компьютера)
+            }
+
+            return Trees; //Вернуть список деревьев
+        }
+
+        //Изменить текущую доску
+        public void ChangeMap(int[,] desk)
+        {
+            //Перебор клеток доски
+            for(int i = 0; i < 8; i++)
+            {
+                for (int j = 0; j < 8; j++)
+                {
+                    map[i, j] = desk[i, j]; //Клетка старой доски приравниваеться новой
+                }
+            }
+        }
+        
+        public void MakePathAI()
+        {
+            List<Path> FirstPathes = GivePathes(map); //Список возможных первых ходов
+
+            List<PathesTree> Trees = ConvertPathestoTrees(FirstPathes, map); //Список деревьев ходов
+            
+            if(Trees.Count() != 0) //Если количество ходов больше нуля
+            {
+                //TreeNum = 0; //Слой дерева нулевой
+
+                ////Просчет ветвей для каждого дерева ходов
+                //foreach (PathesTree t in Trees)
+                //{
+                //    //Перебор списка деревьев в каждом дереве из первого списка
+                //    foreach (PathesTree t2 in GiveTurnsToTree(t))
+                //    {
+                //        t.PathesTrees.Add(t2); //Добавить дерево
+                //    }
+                //}
+
+
+
+                double MaxMark = -1; //Максимальная оценка хода
+                int NumOfMaxTree = 0; //Номер дерева с максимальной оценкой
+
+                //Переребрать все деревья
+                for (int i = 0; i < Trees.Count; i++)
+                {
+                    if (Trees[i].GetMark() > MaxMark) //Если оценка больше максимальной
+                    {
+                        MaxMark = Trees[i].GetMark(); //Маскимальная оценка - оценка этого дерева
+                        NumOfMaxTree = i; //Номер максимального дерева - этот
+                    }
+                }
+
+                ChangeMap(Trees[NumOfMaxTree].GamePosition.Desk); //Изменить карту, на доску дерева с максимальной оценкой
+                
+                SwitchPlayer(); //Сменить игрока
+
+                PositionNum++; //Увеличить номер позиции
+
+                // Ход входит в историю
+                gamehistory.Add(new int[8, 8]);
+                for (int i = 0; i < 8; i++)
+                {
+                    for (int j = 0; j < 8; j++)
+                    {
+
+                        gamehistory[PositionNum][i, j] = map[i, j];
+                    }
+                }
+
+                label5.Text = WriteTurn(gamehistory[PositionNum - 1], gamehistory[PositionNum]); //Высветить ход, сделанный игроком
+
+                ReDrawMap();//Перерисовать карту
+
+                ActivateAllButtons();//Активировать все кнопки
+            }
+
+
+
+        }
+
+        ////Просчитать ветви дерева
+        //public List<PathesTree> GiveTurnsToTree(PathesTree tree)
+        //{
+        //    TreeNum++; //Повысить слой дерева
+
+        //    List<Path> Pathes = GivePathes(tree.GamePosition.Desk); //Список возможных ходов
+        //    List<PathesTree> Trees = ConvertPathestoTrees(Pathes, tree.GamePosition.Desk); //Список деревьев ходов
+
+        //    //Перебор списка деревьев
+        //    for (int i = 0; i < Trees.Count; i++)
+        //    {
+        //        if (TreeNum < MaxTreeNum) //Если текущий слой дерева меньше максимального
+        //        {
+        //            //Перебор списка деревьев в каждом дереве из первого списка
+        //            foreach (PathesTree t in GiveTurnsToTree(Trees[i]))
+        //            {
+        //                Trees[i].PathesTrees.Add(t); //Добавить дерево
+        //            }
+        //        }
+        //    }
+
+        //    return Trees;
+        //}
+
 
         private void label1_Click(object sender, EventArgs e)
         {
@@ -2771,7 +2898,7 @@ namespace Chess
         {
             IsComputerPlaying = true; //Компьютер играет в шахматы
             ComputerPlayer = 1; //Компьбтер играет за белых
-            MakeRandomPath();//Сделать случайный ход
+            MakePathAI();//Сделать ход искуственного интеллекта
         }
     }
 
